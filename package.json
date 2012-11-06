@@ -1,6 +1,6 @@
 {
   "name": "FieldDBAuthenticationService",
-  "version": "1.24.3",
+  "version": "1.28.1",
   "dependencies": {
     "express": "latest"
     ,"bcrypt": "latest"
@@ -8,5 +8,6 @@
     ,"nano": "latest"
     ,"nodemailer" : "latest"
     ,"cradle": "latest"
+    ,"underscore":"latest"
   }
 }
