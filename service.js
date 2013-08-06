@@ -359,6 +359,66 @@ app
                     }
                   });
         });
+
+app
+.post(
+    '/updateroles',
+    function(req, res, next) {
+      authenticationfunctions
+          .authenticateUser(
+              req.body.username,
+              req.body.password,
+              req,
+              function(err, user, info) {
+                var returndata = {};
+                if (err) {
+                  console
+                      .log(new Date()
+                          + " There was an error in the authenticationfunctions.authenticateUser:\n"
+                          + util.inspect(err));
+                  returndata.userFriendlyErrors = [ info.message ];
+                }
+                if (!user) {
+                  returndata.userFriendlyErrors = [ info.message ];
+                } else {
+                  returndata.corpusadded = true;
+                  returndata.info = [ info.message ];
+
+                  // Update user roles for corpus
+                  corpus
+                      .updateRoles(
+                          req,
+                          function(err, roles, info) {
+                            if (err) {
+                              console
+                                  .log(new Date()
+                                      + " There was an error in corpus.updateRoles");
+                              returndata.userFriendlyErrors = [ "There was an error updating the user roles.\nUser " + roles + " does not exist." ];
+                            }
+                             if (!roles) {
+                              returndata.userFriendlyErrors = [ "There was an error updating the user roles." ];
+                            } else {
+                              returndata.corpusadded = true;
+                              returndata.info = [ "User roles updated successfully for " + roles ];
+//                              returndata.info = [ info.message ];
+                              console.log(new Date()
+                                  + " Returning corpusadded okay:\n");
+                            }
+                            console.log(new Date()
+                                + " Returning response:\n"
+                                + util.inspect(returndata));
+                            var cors_headers = build_headers_from_request(req);
+                            for (key in cors_headers) {
+                              value = cors_headers[key];
+                              res.setHeader(key, value);
+                            }
+                            res.send(returndata);
+                          });
+                }
+              });
+    });
+
+
 // END TS
 
 https.createServer(node_config.httpsOptions, app).listen(node_config.port);
