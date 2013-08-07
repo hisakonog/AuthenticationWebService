@@ -1,8 +1,15 @@
-var https = require('https'), express = require('express'), authenticationfunctions = require('./lib/userauthentication.js'), node_config = require("./lib/nodeconfig_local"), fs = require('fs'), util = require('util'), corpus = require('./lib/corpus');
+var https = require('https')
+  , express = require('express')
+  , authenticationfunctions = require('./lib/userauthentication.js')
+  , node_config = require("./lib/nodeconfig_devserver")
+  , fs = require('fs')
+  , util = require('util')
+  , corpus = require('./lib/corpus');
 
-// read in the specified filenames as the security key and certificate
+//read in the specified filenames as the security key and certificate
 node_config.httpsOptions.key = fs.readFileSync(node_config.httpsOptions.key);
 node_config.httpsOptions.cert = fs.readFileSync(node_config.httpsOptions.cert);
+
 
 var app = express();
 
@@ -23,7 +30,7 @@ app.configure(function() {
  * CORS support
  * http://stackoverflow.com/questions/7067966/how-to-allow-cors-in-express-nodejs
  */
-var build_headers_from_request = function(req) {
+var build_headers_from_request = function(req){
   if (req.headers['access-control-request-headers']) {
     headers = req.headers['access-control-request-headers'];
   } else {
@@ -36,7 +43,7 @@ var build_headers_from_request = function(req) {
       }
     }
   }
-  headers.host = "authdev.lingsync.org";// target0.hostname;
+  headers.host = "authdev.lingsync.org";//target0.hostname;
   var cors_headers = {
     'access-control-allow-methods' : 'HEAD, POST, GET, PUT, PATCH, DELETE',
     'access-control-max-age' : '86400',
@@ -47,7 +54,7 @@ var build_headers_from_request = function(req) {
   return cors_headers;
 };
 
-app.options('*', function(req, res, next) {
+app.options('*' , function(req, res, next){
   if (req.method === 'OPTIONS') {
     console.log('responding to OPTIONS request');
     var cors_headers = build_headers_from_request(req);
@@ -56,30 +63,19 @@ app.options('*', function(req, res, next) {
       res.setHeader(key, value);
     }
     res.send(200);
-  }
+ }
 });
 
 /**
  * Responds to requests for login, if sucessful replies with the user's details
  * as json
  */
-app
-    .post(
-        '/login',
-        function(req, res, next) {
-          authenticationfunctions
-              .authenticateUser(
-                  req.body.username,
-                  req.body.password,
-                  req,
-                  function(err, user, info) {
-                    var returndata = {};
-                    if (err) {
-                      console
-                          .log(new Date()
-                              + " There was an error in the authenticationfunctions.authenticateUser:\n"
-                              + util.inspect(err));
-                      returndata.userFriendlyErrors = [ info.message ];
+app.post('/login', function(req, res, next) {
+  authenticationfunctions.authenticateUser(req.body.username, req.body.password, req, function(err, user, info) {
+    var returndata = {};
+    if (err) {
+      console.log(new Date() + " There was an error in the authenticationfunctions.authenticateUser:\n" + util.inspect(err));
+      returndata.userFriendlyErrors = [ info.message ];
                     }
                     if (!user) {
                       returndata.userFriendlyErrors = [ info.message ];
