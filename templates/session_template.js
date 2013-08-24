@@ -7,15 +7,16 @@ module.exports = {
     "mask": "Change this session goal to the describe your first elicitiation session.",
     "encrypted": "",
     "shouldBeEncrypted": "",
-    "help": "The goals of the session.",
+    "help": "The goals of the elicitation session, it could be why you set up the meeting, or some of the core contexts you were trying to elicit. Sample: collect some anti-passives",
     "userchooseable": "disabled"
   }, {
     "label": "consultants",
     "value": "XY",
     "mask": "XY",
     "encrypted": "",
+    "userMasks": [],
     "shouldBeEncrypted": "",
-    "help": "Put your team's data entry conventions here (if any)...",
+    "help": "This is a comma seperated field of all the consultants who were present for this elicitation session. This field also contains a (hidden) array of consultant masks with more details about the consultants if they are not anonymous or are actual users of the system. ",
     "userchooseable": "disabled"
   }, {
     "label": "dialect",
@@ -35,27 +36,44 @@ module.exports = {
     "userchooseable": "disabled"
   }, {
     "label": "dateElicited",
-    "value": "Change this to a time period or date for example: Spring 2013 or Day 2 Ling 489 or Nov 23 2012.",
-    "mask": "Change this to a time period or date for example: Spring 2013 or Day 2 Ling 489 or Nov 23 2012.",
+    "value": "Change this to a time period or date for example: Spring 2013 or Nov 23 2012.",
+    "mask": "Change this to a time period or date for example: Spring 2013 or Nov 23 2012.",
     "encrypted": "",
     "shouldBeEncrypted": "",
     "help": "The date when the session took place.",
     "userchooseable": "disabled"
   }, {
     "label": "user",
-    "value": "testingcorpustemplates",
-    "mask": "testingcorpustemplates",
+    "value": "",
+    "mask": "",
     "encrypted": "",
     "shouldBeEncrypted": "",
-    "help": "Put your team's data entry conventions here (if any)...",
+    "help": "This is the username of who created this elicitation session. There are other fields contains an array of participants and consultants. ",
+    "userchooseable": "disabled"
+  }, {
+    "label": "participants",
+    "value": "",
+    "mask": "",
+    "encrypted": "",
+    "userMasks": [],
+    "shouldBeEncrypted": "",
+    "help": "This is a comma seperated field of all the people who were present for this elicitation session. This field also contains a (hidden) array of user masks with more details about the people present, if they are not anonymous or are actual users of the system. ",
     "userchooseable": "disabled"
   }, {
     "label": "dateSEntered",
-    "value": "2013-08-01T14:54:18.524Z",
-    "mask": "2013-08-01T14:54:18.524Z",
+    "value": "",
+    "mask": "",
     "encrypted": "",
     "shouldBeEncrypted": "",
-    "help": "The date when the session data was entered.",
+    "help": "This field is deprecated, it was replaced by DateSessionEntered",
+    "userchooseable": "disabled"
+  }, {
+    "label": "DateSessionEntered",
+    "value": "",
+    "mask": "",
+    "encrypted": "",
+    "shouldBeEncrypted": "",
+    "help": "This is the date in which the session was entered.",
     "userchooseable": "disabled"
   }],
   "dateCreated": "",

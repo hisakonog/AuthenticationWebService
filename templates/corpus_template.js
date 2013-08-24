@@ -132,7 +132,7 @@ module.exports = {
     "value": "",
     "mask": "",
     "encrypted": "",
-    "consultantMasks": [],
+    "userMasks": [],
     "shouldBeEncrypted": "",
     "help": "This is a comma seperated field of all the consultants who were present for this elicitation session. This field also contains a (hidden) array of consultant masks with more details about the consultants if they are not anonymous or are actual users of the system. ",
     "userchooseable": "disabled"
@@ -173,7 +173,7 @@ module.exports = {
     "value": "",
     "mask": "",
     "encrypted": "",
-    "participantMasks": [],
+    "userMasks": [],
     "shouldBeEncrypted": "",
     "help": "This is a comma seperated field of all the people who were present for this elicitation session. This field also contains a (hidden) array of user masks with more details about the people present, if they are not anonymous or are actual users of the system. ",
     "userchooseable": "disabled"
