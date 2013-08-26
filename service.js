@@ -248,7 +248,6 @@ app.get('/addroletouser', function(req, res, next) {
 
 /**
  * Responds to requests for adding a corpus to a user, if successful replies with the pouchname of the new corpus in a string and a corpusaded = true 
- TODO need to change this to return something that calling apps can use, like either the entire corpus doc, or the couchConnection... somethign so they can open the new corpus for the user.
  */
 app.post('/newcorpus', function(req, res, next) {
   authenticationfunctions.authenticateUser(req.body.username, req.body.password, req, function(err, user, info) {
