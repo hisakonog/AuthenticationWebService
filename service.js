@@ -273,7 +273,8 @@ app.post('/newcorpus', function(req, res, next) {
           returndata.userFriendlyErrors = ["There was an error creating your corpus. " + req.body.newCorpusName];
         } else {
           returndata.corpusadded = true;
-          returndata.info = ["Corpus " + corpus + " created successfully."];
+          returndata.info = ["Corpus " + corpus.title + " created successfully."];
+          returndata.corpus = corpus;
           //returndata.info = [ info.message ];
           console.log(new Date() + " Returning corpus added okay:\n");
         }
