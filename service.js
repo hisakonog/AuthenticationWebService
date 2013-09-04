@@ -6,6 +6,8 @@ var path = require('path');
 var routes = require('./routes/routes');
 var deploy = process.env.NODE_DEPLOY_TARGET || "local";
 var config = require('./lib/nodeconfig_' + deploy);
+var couchkeys = require('./lib/couchkeys_' + deploy);
+var mailconfig = require('./lib/mailconfig_' + deploy);
 
 var UserHandler = require('./lib/Users');
 var FieldDBHandler = require('./lib/FieldDB');
@@ -49,7 +51,10 @@ var handlers = {
     'authentication': authenticationfunctions,
     'corpus': corpus
   }),
-  app: new AppHandler()
+  app: new AppHandler({
+    'config': config,
+    'couchkeys': couchkeys
+  })
 };
 
 routes.setup(app, handlers);
