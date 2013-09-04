@@ -4,10 +4,10 @@ var fs = require('fs');
 var util = require('util');
 var path = require('path');
 var routes = require('./routes/routes');
-var deploy = process.env.NODE_DEPLOY_TARGET || "local";
-var config = require('./lib/nodeconfig_' + deploy);
-var couchkeys = require('./lib/couchkeys_' + deploy);
-var mailconfig = require('./lib/mailconfig_' + deploy);
+var deploy_target = process.env.NODE_DEPLOY_TARGET || "local";
+var config = require('./lib/nodeconfig_' + deploy_target);
+var couchkeys = require('./lib/couchkeys_' + deploy_target);
+var mailconfig = require('./lib/mailconfig_' + deploy_target);
 
 var UserHandler = require('./lib/Users');
 var FieldDBHandler = require('./lib/FieldDB');
