@@ -42,19 +42,22 @@ app.configure('production', function() {
   app.use(express.errorHandler());
 });
 
-
+var users = new UserHandler({
+  'authentication': authenticationfunctions,
+  'corpus': corpus
+});
+var fielddb = new FieldDBHandler({
+  'authentication': authenticationfunctions,
+  'corpus': corpus
+});
 var handlers = {
-  users: new UserHandler({
-    'authentication': authenticationfunctions,
-    'corpus': corpus
-  }),
-  fielddb: new FieldDBHandler({
-    'authentication': authenticationfunctions,
-    'corpus': corpus
-  }),
-  app: new AppHandler({
+  'users': users,
+  'fielddb': fielddb,
+  'app': new AppHandler({
     'config': config,
-    'couchkeys': couchkeys
+    'couchkeys': couchkeys,
+    'usersAPIDocs': users.docs,
+    'fielddbAPIDocs': fielddb.docs
   })
 };
 
