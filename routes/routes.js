@@ -42,7 +42,6 @@ var setup = function(api, handlers) {
 	api.post('/addroletouser', handlers.fielddb.addFieldDBTeamMembers);
 	api.post('/newcorpus', handlers.fielddb.createFieldDBs);
 	api.post('/updateroles', handlers.fielddb.createFieldDBs);
-	api.get('/', handlers.app.getApiDocs);
 
 };
 exports.setup = setup;
