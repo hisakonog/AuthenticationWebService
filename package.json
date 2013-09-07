@@ -1,5 +1,6 @@
 {
-  "name": "fielddb-auth-service",
+  "name": "fielddb-auth",
+  "version": "0.72.1",
   "description": "Authentication web services for FieldDB.",
   "homepage": "https://github.com/OpenSourceFieldlinguistics/FieldDB/issues/milestones?state=closed",
   "repository": {
@@ -23,6 +24,7 @@
   ],
   "dependencies": {
     "bcrypt": "*",
+    "cors": "*",
     "cradle": "*",
     "express": "*",
     "MD5": "*",
@@ -33,6 +35,7 @@
     "uuid": "1.4.1"
   },
   "peerDependencies": {
+    "fielddb-api": "*",
     "fielddb-web": "*",
     "fielddb-audio": "*",
     "fielddb-lexicon": "*",
@@ -42,12 +45,15 @@
     "grunt": "*",
     "karma": "*"
   },
-  "main": "./service",
+  "main": "./service.js",
   "bin": {
-    "karma": "./bin/fielddb-auth-service"
+    "fielddb-auth": "./service.js"
   },
   "engines": {
     "node": "~0.8 || ~0.10"
   },
-  "version": "0.72.1"
+  "scripts": {
+    "test": "echo \"No test specified\" && exit "
+  },
+  "license": "Apache 2.0"
 }
