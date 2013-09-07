@@ -1,3 +1,4 @@
+#!/usr/local/bin/node
 /* Load modules provided by Node */
 var https = require('https');
 var FileSystem = require('fs');
