@@ -1,15 +1,53 @@
 {
-  "name": "FieldDBAuthenticationService",
-  "version": "1.28.1",
+  "name": "fielddb-auth-service",
+  "description": "Authentication web services for FieldDB.",
+  "homepage": "https://github.com/OpenSourceFieldlinguistics/FieldDB/issues/milestones?state=closed",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/OpenSourceFieldlinguistics/AuthenticationWebService.git"
+  },
+  "bugs": {
+    "url": "https://github.com/OpenSourceFieldlinguistics/FieldDB/issues"
+  },
+  "keywords": [
+    "fielddb",
+    "authentication"
+  ],
+  "author": "cesine <cesine@yahoo.com>",
+  "contributors": [
+    "cesine <cesine@yahoo.com>",
+    "Tobin Skinner <tobin.skinner@gmail.com>",
+    "Josh <josh.horner@gmail.com>",
+    "hisakonog <hisakonog@gmail.com>",
+    "Fieldlinguist <info@fieldlinguist.com>"
+  ],
   "dependencies": {
-    "express": "latest",
-    "bcrypt": "latest",
-    "forever": "latest",
-    "nano": "latest",
-    "nodemailer": "latest",
-    "MD5": "latest",
-    "cradle": "latest",
-    "underscore": "latest",
+    "bcrypt": "*",
+    "cradle": "*",
+    "express": "*",
+    "MD5": "*",
+    "nano": "*",
+    "nodemailer": "*",
+    "swagger-node-express": "*",
+    "underscore": "*",
     "uuid": "1.4.1"
-  }
+  },
+  "peerDependencies": {
+    "fielddb-web": "*",
+    "fielddb-audio": "*",
+    "fielddb-lexicon": "*",
+    "fielddb-spider": "*"
+  },
+  "devDependencies": {
+    "grunt": "*",
+    "karma": "*"
+  },
+  "main": "./service",
+  "bin": {
+    "karma": "./bin/fielddb-auth-service"
+  },
+  "engines": {
+    "node": "~0.8 || ~0.10"
+  },
+  "version": "0.72.1"
 }

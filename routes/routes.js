@@ -1,4 +1,35 @@
-var setup = function(api, handlers) {
+var deploy_target = process.env.NODE_DEPLOY_TARGET || "local";
+var config = require('../lib/nodeconfig_' + deploy_target);
+var couchkeys = require('../lib/couchkeys_' + deploy_target);
+
+
+var UserHandler = require('../lib/Users');
+var FieldDBHandler = require('../lib/FieldDB');
+var AppHandler = require('../lib/About');
+
+var authenticationfunctions = require('../lib/userauthentication');
+var corpus = require('../lib/corpus');
+
+var users = new UserHandler({
+	'authentication': authenticationfunctions,
+	'corpus': corpus
+});
+var fielddb = new FieldDBHandler({
+	'authentication': authenticationfunctions,
+	'corpus': corpus
+});
+var handlers = {
+	'users': users,
+	'fielddb': fielddb,
+	'app': new AppHandler({
+		'config': config,
+		'couchkeys': couchkeys,
+		'usersAPIDocs': users.docs,
+		'fielddbAPIDocs': fielddb.docs
+	})
+};
+
+var setup = function(api) {
 	api.post('/users/:username', handlers.users.createUsers);
 	api.put('/users/:username', handlers.users.updateUsers);
 	api.get('/users/:username', handlers.users.getUsers);

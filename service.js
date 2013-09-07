@@ -1,111 +1,66 @@
+/* Load modules provided by Node */
 var https = require('https');
-var express = require('express');
-var fs = require('fs');
-var util = require('util');
-var path = require('path');
-var routes = require('./routes/routes');
+var FileSystem = require('fs');
+/* Load modules provided by $ npm install, see package.json for details */
+var CrossOriginResourceSharing = require('cors');
+var ExpressWebServer = require('express');
+/* Load modules provided by this codebase */
+var AuthWebServiceRoutes = require('./routes/routes');
+
+/** 
+ * You can control aspects of the deployment by using Environment Variables
+ *
+ * Examples:
+ * $ NODE_DEPLOY_TARGET=production        # uses lib/nodeconfig_production.js
+ * $ NODE_DEPLOY_TARGET=devserver         # uses lib/nodeconfig_devserver.js
+ * $ NODE_DEPLOY_TARGET=local             # uses lib/nodeconfig_local.js
+ * $ NODE_DEPLOY_TARGET=yoursecretconfig  # uses lib/nodeconfig_yoursecretconfig.js
+ */
 var deploy_target = process.env.NODE_DEPLOY_TARGET || "local";
 var config = require('./lib/nodeconfig_' + deploy_target);
-var couchkeys = require('./lib/couchkeys_' + deploy_target);
-var mailconfig = require('./lib/mailconfig_' + deploy_target);
 
-var UserHandler = require('./lib/Users');
-var FieldDBHandler = require('./lib/FieldDB');
-var AppHandler = require('./lib/About');
-
-var authenticationfunctions = require('./lib/userauthentication');
-var corpus = require('./lib/corpus');
-
-//read in the specified filenames as the security key and certificate
-config.httpsOptions.key = fs.readFileSync(config.httpsOptions.key);
-config.httpsOptions.cert = fs.readFileSync(config.httpsOptions.cert);
-
-var app = express();
-
-// configure Express
-app.configure(function() {
-  app.use(express.logger());
-  app.use(express.cookieParser());
-  app.use(express.bodyParser());
-  app.use(express.methodOverride());
-  app.use(app.router);
-  app.use(express.static(__dirname + '/public'));
+/**
+ * Use Express to create the AuthWebService see http://expressjs.com/ for more details
+ */
+var AuthWebService = ExpressWebServer();
+AuthWebService.configure(function() {
+  AuthWebService.use(ExpressWebServer.logger());
+  AuthWebService.use(ExpressWebServer.cookieParser());
+  AuthWebService.use(ExpressWebServer.bodyParser());
+  AuthWebService.use(ExpressWebServer.methodOverride());
+  AuthWebService.use(CrossOriginResourceSharing());
+  AuthWebService.use(AuthWebService.router);
+  /*
+   * Although this is mostly a webservice used by machines (not a websserver used by humans)
+   * we are still serving a user interface for the api sandbox in the public folder
+   */
+  AuthWebService.use(ExpressWebServer.static(__dirname + '/public'));
 });
 
-app.configure('development', function() {
-  app.use(express.errorHandler({
+AuthWebService.configure('development', function() {
+  AuthWebService.use(ExpressWebServer.errorHandler({
     dumpExceptions: true,
     showStack: true
   }));
 });
-app.configure('production', function() {
-  app.use(express.errorHandler());
+
+AuthWebService.configure('production', function() {
+  AuthWebService.use(ExpressWebServer.errorHandler());
 });
 
-var users = new UserHandler({
-  'authentication': authenticationfunctions,
-  'corpus': corpus
-});
-var fielddb = new FieldDBHandler({
-  'authentication': authenticationfunctions,
-  'corpus': corpus
-});
-var handlers = {
-  'users': users,
-  'fielddb': fielddb,
-  'app': new AppHandler({
-    'config': config,
-    'couchkeys': couchkeys,
-    'usersAPIDocs': users.docs,
-    'fielddbAPIDocs': fielddb.docs
-  })
-};
-
-routes.setup(app, handlers);
-/*
- * CORS support
- * http://stackoverflow.com/questions/7067966/how-to-allow-cors-in-express-nodejs
+/**
+ * Set up all the available URL AuthWebServiceRoutes see routes/routes.js for more details
  */
-var build_headers_from_request = function(req) {
-  if (req.headers['access-control-request-headers']) {
-    headers = req.headers['access-control-request-headers'];
-  } else {
-    headers = 'accept, accept-charset, accept-encoding, accept-language, authorization, content-length, content-type, host, origin, proxy-connection, referer, user-agent, x-requested-with';
-    _ref = req.headers;
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      header = _ref[_i];
-      if (req.indexOf('x-') === 0) {
-        headers += ', ' + header;
-      }
-    }
-  }
-  headers.host = "authdev.lingsync.org"; //target0.hostname;
-  var cors_headers = {
-    'access-control-allow-methods': 'HEAD, POST, GET, PUT, PATCH, DELETE',
-    'access-control-max-age': '86400',
-    'access-control-allow-headers': headers,
-    'access-control-allow-credentials': 'true',
-    'access-control-allow-origin': req.headers.origin || '*'
-  };
-  return cors_headers;
-};
-
-app.options('*', function(req, res, next) {
-  if (req.method === 'OPTIONS') {
-    console.log('responding to OPTIONS request');
-    var cors_headers = build_headers_from_request(req);
-    for (var key in cors_headers) {
-      value = cors_headers[key];
-      res.setHeader(key, value);
-    }
-    res.send(200);
-  }
-});
+AuthWebServiceRoutes.setup(AuthWebService);
 
 
-// http.createServer(app).listen(app.get('port'), function(){
-//   console.log('Express server listening on port ' + app.get('port'));
-// });
-https.createServer(config.httpsOptions, app).listen(config.httpsOptions.port, function() {
-  console.log("Express server listening on port %d", config.httpsOptions.port);
+/**
+ * Read in the specified filenames for this config's security key and certificates,
+ * and then ask https to turn on the webservice
+ */
+config.httpsOptions.key = FileSystem.readFileSync(config.httpsOptions.key);
+config.httpsOptions.cert = FileSystem.readFileSync(config.httpsOptions.cert);
+
+https.createServer(config.httpsOptions, AuthWebService).listen(config.httpsOptions.port, function() {
+  console.log("Listening on port %d", config.httpsOptions.port);
 });
