@@ -44,7 +44,10 @@
   },
   "devDependencies": {
     "grunt": "*",
-    "karma": "*"
+    "grunt-contrib-nodeunit": "*",
+    "grunt-contrib-jshint": "*",
+    "grunt-contrib-watch": "*",
+    "nodeunit": "*"
   },
   "main": "./service.js",
   "bin": {
@@ -54,7 +57,7 @@
     "node": "~0.8 || ~0.10"
   },
   "scripts": {
-    "test": "echo \"No test specified\" && exit "
+    "test": "grunt nodeunit"
   },
   "license": "Apache 2.0"
 }
