@@ -1,17 +1,18 @@
 /* Load modules provided by $ npm install, see package.json for details */
 var swagger = require('swagger-node-express');
 var param = require('../node_modules/swagger-node-express/Common/node/paramTypes.js');
+var diacritics = require('diacritics');
 
 /* Load modules provided by this codebase */
-var UserLib = require('../../FieldDBAPI/lib/User');
-var CorpusConnectionLib = require('../../FieldDBAPI/lib/CorpusConnection');
+var UserLib = require('../../FieldDB/api/user/UserGeneric');
+var CorpusConnectionLib = require('../../FieldDB/api/corpus/CorpusConnection');
 var appVersion = require('../package.json').version;
 
 
 var defaultCorpusConnectionFactory = new CorpusConnectionLib({
 	'dbname': 'public-firstcorpus'
-});
-var UserFactory = new UserLib(appVersion, defaultCorpusConnectionFactory);
+}, diacritics);
+var UserFactory = new UserLib(appVersion, defaultCorpusConnectionFactory, diacritics);
 
 
 /* export functions which can be used as API routes */

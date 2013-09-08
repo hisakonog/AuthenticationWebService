@@ -26,6 +26,7 @@
     "bcrypt": "*",
     "cors": "*",
     "cradle": "*",
+    "diacritics" : "1.0.0",
     "express": "*",
     "MD5": "*",
     "nano": "*",
