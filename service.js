@@ -1,10 +1,13 @@
 #!/usr/local/bin/node
+
 /* Load modules provided by Node */
 var https = require('https');
 var FileSystem = require('fs');
+
 /* Load modules provided by $ npm install, see package.json for details */
 var CrossOriginResourceSharing = require('cors');
 var ExpressWebServer = require('express');
+
 /* Load modules provided by this codebase */
 var AuthWebServiceRoutes = require('./routes/routes');
 
