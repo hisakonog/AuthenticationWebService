@@ -70,7 +70,7 @@ module.exports = {
     "encrypted": "",
     "shouldBeEncrypted": "checked",
     "help": "This optional field is used by the machine to help with search and data cleaning, in combination with morphemes and gloss (above). If you want to use it, you can choose to use any sort of syntactic category tagging you wish. It could be very theoretical like Distributed Morphology (Sample entry: √-GEN-NUM), or very a-theroretical like the Penn Tree Bank Tag Set. (Sample entry: NNS) http://www.ims.uni-stuttgart.de/projekte/CorpusWorkbench/CQP-HTMLDemo/PennTreebankTS.html",
-    "showToUserTypes": "machine",
+    "showToUserTypes": "linguist",
     "userchooseable": "disabled"
   }, {
     "label": "syntacticTreeLatex",
@@ -79,7 +79,7 @@ module.exports = {
     "encrypted": "",
     "shouldBeEncrypted": "checked",
     "help": "This optional field is used by the machine to make LaTeX trees and help with search and data cleaning, in combination with morphemes and gloss (above). If you want to use it, you can choose to use any sort of LaTeX Tree package (we use QTree by default) Sample entry: Tree [.S NP VP ]",
-    "showToUserTypes": "machine",
+    "showToUserTypes": "linguist",
     "userchooseable": "disabled"
   }, {
     "label": "translation",
@@ -115,7 +115,7 @@ module.exports = {
     "encrypted": "",
     "shouldBeEncrypted": "",
     "help": "The user who originally entered the datum",
-    "showToUserTypes": "machine",
+    "showToUserTypes": "readonly",
     "userchooseable": "disabled"
   }, {
     "label": "modifiedByUser",
@@ -125,7 +125,7 @@ module.exports = {
     "shouldBeEncrypted": "",
     "help": "An array of users who modified the datum",
     "users": [],
-    "showToUserTypes": "machine",
+    "showToUserTypes": "readonly",
     "userchooseable": "disabled"
   }],
   "conversationFields": [{
