@@ -1,7 +1,7 @@
 #!/bin/bash
 
 cd $FIELDDB_HOME/AuthenticationWebService
-bash switch_to_producti.sh 
+NODE_DEPLOY_TARGET="production"
 
 $FIELDDB_HOME/AuthenticationWebService/node_modules/forever/bin/forever \
 start \

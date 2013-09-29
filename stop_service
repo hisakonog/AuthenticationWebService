@@ -3,4 +3,4 @@
 $FIELDDB_HOME/AuthenticationWebService/node_modules/forever/bin/forever stop service.js
 
 cd $FIELDDB_HOME/AuthenticationWebService
-bash switch_to_develop_easy_setup.sh
+NODE_DEPLOY_TARGET="local"
