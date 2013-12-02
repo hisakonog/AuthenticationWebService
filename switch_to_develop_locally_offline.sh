@@ -14,6 +14,8 @@ mv output lib/userauthentication.js
 
 sed 's/couchkeys_[^)]*)/couchkeys_local")/' lib/corpus.js  > output
 mv output lib/corpus.js
+sed 's/nodeconfig_[^)]*)/nodeconfig_local")/' lib/corpus.js  > output
+mv output lib/corpus.js
 
 sed 's/couchkeys_[^)]*)/couchkeys_local")/' lib/corpusmanagement.js  > output
 mv output lib/corpusmanagement.js
