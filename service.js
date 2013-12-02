@@ -154,6 +154,68 @@ app.get('/register', function(req, res, next) {
   res.send({});
 });
 
+
+/**
+ * Takes in the http request and response. Calls the setPassword function in
+ * the authenticationfunctions library. The setPassword function takes in an old password,
+ * new password and a username, and a function to call
+ * after setPassword has completed. In this case the done function is expected to
+ * be called with an err (null if no error), user (null if no user), and an info
+ * object containing a message which can be show to the calling application
+ * which sent the post request.
+ *
+ * If there is an error, the info is added to the 'errors' attribute of the
+ * returned json.
+ *
+ * If there is a user, the user is added to the 'user' attribute of the returned
+ * json. If there is no user, the info is again added to the 'errors' attribute
+ * of the returned json.
+ *
+ * Finally the returndata json is sent to the calling application via the
+ * response.
+ */
+app.post('/changepassword', function(req, res) {
+  var oldpassword = req.body.password;
+  var newpassword = req.body.newpassword;
+  var confirmpassword = req.body.confirmpassword;
+  var username = req.body.username;
+  res.status(401);
+  if (newpassword !== confirmpassword) {
+    res.send({userFriendlyErrors: ["New passwords do not match, please try again."]});
+    return;
+  }
+  authenticationfunctions.setPassword(oldpassword, newpassword, username, function(err, user, info) {
+    var returndata = {};
+    if (err) {
+      console.log(new Date() + " There was an error in the authenticationfunctions.setPassword " + util.inspect(err));
+      returndata.userFriendlyErrors = [info.message];
+    }
+    if (!user) {
+      returndata.userFriendlyErrors = [info.message];
+    } else {
+      returndata.user = user;
+      returndata.info = [info.message];
+      res.status(200);
+      console.log(new Date() + " Returning success: " + util.inspect(user));
+    }
+    var cors_headers = build_headers_from_request(req);
+    for (var key in cors_headers) {
+      value = cors_headers[key];
+      res.setHeader(key, value);
+    }
+    res.send(returndata);
+
+  });
+});
+app.get('/changepassword', function(req, res, next) {
+  var cors_headers = build_headers_from_request(req);
+  for (var key in cors_headers) {
+    value = cors_headers[key];
+    res.setHeader(key, value);
+  }
+  res.send({});
+});
+
 /**
  * Responds to requests for a list of team members on a corpus, if successful replies with a list of
  * usernames as json
