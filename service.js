@@ -42,7 +42,7 @@ var build_headers_from_request = function(req) {
       }
     }
   }
-  headers.host = "authdev.lingsync.org"; //target0.hostname;
+  headers.host = "authdev.lingsync.org"; //
   var cors_headers = {
     'access-control-allow-methods': 'HEAD, POST, GET, PUT, PATCH, DELETE',
     'access-control-max-age': '86400',
