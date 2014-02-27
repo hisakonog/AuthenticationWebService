@@ -115,6 +115,7 @@ module.exports = {
     "encrypted": "",
     "shouldBeEncrypted": "",
     "help": "The user who originally entered the datum",
+    "readonly": true,
     "showToUserTypes": "readonly",
     "userchooseable": "disabled"
   }, {
@@ -124,6 +125,7 @@ module.exports = {
     "encrypted": "",
     "shouldBeEncrypted": "",
     "help": "An array of users who modified the datum",
+    "readonly": true,
     "users": [],
     "showToUserTypes": "readonly",
     "userchooseable": "disabled"
