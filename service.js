@@ -22,12 +22,21 @@ var AuthWebServiceRoutes = require('./routes/routes');
  */
 var deploy_target = process.env.NODE_DEPLOY_TARGET || "local";
 var config = require('./lib/nodeconfig_' + deploy_target);
-
+var apiVersion = "v" + parseInt(require("./package.json").version, 10);
+console.log("Accepting api version " + apiVersion);
 /**
  * Use Express to create the AuthWebService see http://expressjs.com/ for more details
  */
 var AuthWebService = ExpressWebServer();
 AuthWebService.configure(function() {
+
+  // Accept versions 
+  AuthWebService.use(function(req, res, next) {
+    if (req.url.indexOf("/" + apiVersion) === 0) {
+      req.url = req.url.replace("/" + apiVersion, "");
+    }
+    next();
+  });
   AuthWebService.use(ExpressWebServer.logger());
   AuthWebService.use(ExpressWebServer.cookieParser());
   AuthWebService.use(ExpressWebServer.bodyParser());
@@ -55,8 +64,7 @@ AuthWebService.configure('production', function() {
 /**
  * Set up all the available URL AuthWebServiceRoutes see routes/routes.js for more details
  */
-AuthWebServiceRoutes.setup(AuthWebService);
-
+AuthWebServiceRoutes.setup(AuthWebService, apiVersion);
 
 /**
  * Read in the specified filenames for this config's security key and certificates,

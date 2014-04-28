@@ -14,7 +14,7 @@ var deploy_target = process.env.NODE_DEPLOY_TARGET || "local";
 var config = require('./../lib/nodeconfig_' + deploy_target);
 
 
-var setup = function(api) {
+var setup = function(api, apiVersion) {
 
 	swagger.configureSwaggerPaths('', '/api', '');
 	swagger.setAppHandler(api);
@@ -63,6 +63,6 @@ var setup = function(api) {
 	swagger.addPut(morphologicalParsesRoutes.putMorphologicalParses);
 	swagger.addDelete(morphologicalParsesRoutes.deleteMorphologicalParses);
 
-	swagger.configure(config.externalOrigin + '/v2', "2");
+	swagger.configure(config.externalOrigin + '/' + apiVersion, apiVersion.replace("v", ""));
 };
 exports.setup = setup;
