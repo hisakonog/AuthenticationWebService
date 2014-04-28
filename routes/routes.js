@@ -10,6 +10,10 @@ var dataRoutes = require('./data');
 var eLanguagesRoutes = require('./elanguages');
 var morphologicalParsesRoutes = require('./morphologicalparses');
 
+var deploy_target = process.env.NODE_DEPLOY_TARGET || "local";
+var config = require('./../lib/nodeconfig_' + deploy_target);
+
+
 var setup = function(api) {
 
 	swagger.configureSwaggerPaths('', '/api', '');
@@ -33,7 +37,7 @@ var setup = function(api) {
 	swagger.addPost(corporaRoutes.postCorpora);
 	swagger.addPut(corporaRoutes.putCorpora);
 	swagger.addDelete(corporaRoutes.deleteCorpora);
-	
+
 	swagger.addGet(dataRoutes.getData);
 	swagger.addPost(dataRoutes.postData);
 	swagger.addPut(dataRoutes.putData);
@@ -60,6 +64,6 @@ var setup = function(api) {
 	swagger.addDelete(morphologicalParsesRoutes.deleteMorphologicalParses);
 
 
-	swagger.configure('https://localhost:3181/v2', "2");
+	swagger.configure(config.httpsOptions.protocol + config.httpsOptions.host + ":" + config.httpsOptions.port + '/v2', "2");
 };
 exports.setup = setup;

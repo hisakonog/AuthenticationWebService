@@ -62,9 +62,15 @@ AuthWebServiceRoutes.setup(AuthWebService);
  * Read in the specified filenames for this config's security key and certificates,
  * and then ask https to turn on the webservice
  */
-config.httpsOptions.key = FileSystem.readFileSync(config.httpsOptions.key);
-config.httpsOptions.cert = FileSystem.readFileSync(config.httpsOptions.cert);
 
-https.createServer(config.httpsOptions, AuthWebService).listen(config.httpsOptions.port, function() {
+if (config.httpsOptions.protocol === "https://") {
+  config.httpsOptions.key = FileSystem.readFileSync(config.httpsOptions.key);
+  config.httpsOptions.cert = FileSystem.readFileSync(config.httpsOptions.cert);
+
+  https.createServer(config.httpsOptions, AuthWebService).listen(config.httpsOptions.port, function() {
+    console.log("Listening on port %d", config.httpsOptions.port);
+  });
+} else {
+  AuthWebService.listen(config.httpsOptions.port);
   console.log("Listening on port %d", config.httpsOptions.port);
-});
+}
