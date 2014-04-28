@@ -31,9 +31,9 @@
     "MD5": "*",
     "nano": "4.1.1",
     "nodemailer": "0.5.2",
-    "swagger-node-express": "*",
     "underscore": "1.5.1",
-    "uuid": "1.4.1"
+    "uuid": "1.4.1",
+    "swagger-node-express": "git://github.com/cesine/swagger-node-express#search"
   },
   "peerDependencies": {
     "fielddb-api": "*",
