@@ -28,8 +28,7 @@ exports.createUserByUsername = {
 		'notes': 'Registers a user for a given username',
 		'summary': 'Register user(s)',
 		'method': 'POST',
-		'params': [param.path('username', 'requested username of the user to be created', 'string'),
-			param.post('object', 'additional user datails', '{"password":"AewrawR"}')
+		'parameters': [param.path('username', 'requested username of the user to be created', 'string')
 		],
 		'responseClass': 'User',
 		'errorResponses': [swagger.errors.invalid('username'), swagger.errors.notFound('user')],
