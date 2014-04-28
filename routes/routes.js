@@ -63,7 +63,6 @@ var setup = function(api) {
 	swagger.addPut(morphologicalParsesRoutes.putMorphologicalParses);
 	swagger.addDelete(morphologicalParsesRoutes.deleteMorphologicalParses);
 
-
-	swagger.configure(config.httpsOptions.protocol + config.httpsOptions.host + ":" + config.httpsOptions.port + '/v2', "2");
+	swagger.configure(config.externalOrigin + '/v2', "2");
 };
 exports.setup = setup;
