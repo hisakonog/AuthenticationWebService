@@ -27,7 +27,7 @@
     "cors": "*",
     "cradle": "*",
     "diacritics" : "1.0.0",
-    "express": "3.3.7",
+    "express": "3.5.2",
     "MD5": "*",
     "nano": "4.1.1",
     "nodemailer": "0.5.2",
