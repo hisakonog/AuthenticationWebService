@@ -1,11 +1,11 @@
 #!/bin/bash
 
-cd $FIELDDB_HOME/AuthenticationWebService
-NODE_DEPLOY_TARGET="production"
+cd $FIELDDB_HOME/ApiWebService
+#NODE_DEPLOY_TARGET="production"
 
 forever \
 start \
--al $FIELDDB_HOME/logs/fielddbauth.log \
--ao $FIELDDB_HOME/logs/fielddbauthout.log \
--ae $FIELDDB_HOME/logs/fielddbautherr.log \
+-al $FIELDDB_HOME/logs/fielddbapi.log \
+-ao $FIELDDB_HOME/logs/fielddbapiout.log \
+-ae $FIELDDB_HOME/logs/fielddbapierr.log \
 service.js
