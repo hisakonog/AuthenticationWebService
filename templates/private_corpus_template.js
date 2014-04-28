@@ -11,7 +11,7 @@ module.exports = {
   "couchConnection": {},
   "replicatedCouchConnections": [],
   "OLAC_export_connections": [],
-  "terms": {"humanReadable": "Sample: The materials included in this corpus are available for research and educational use. If you want to use the materials for commercial purposes, please notify the author(s) of the corpus (myemail@myemail.org) prior to the use of the materials. Users of this corpus can copy and redistribute the materials included in this corpus, under the condition that the materials copied/redistributed are properly attributed.  Modification of the data in any copied/redistributed work is not allowed unless the data source is properly cited and the details of the modification is clearly mentioned in the work. Some of the items included in this corpus may be subject to further access conditions specified by the owners of the data and/or the authors of the corpus."},
+  "termsOfUse": {"humanReadable": "Sample: The materials included in this corpus are available for research and educational use. If you want to use the materials for commercial purposes, please notify the author(s) of the corpus (myemail@myemail.org) prior to the use of the materials. Users of this corpus can copy and redistribute the materials included in this corpus, under the condition that the materials copied/redistributed are properly attributed.  Modification of the data in any copied/redistributed work is not allowed unless the data source is properly cited and the details of the modification is clearly mentioned in the work. Some of the items included in this corpus may be subject to further access conditions specified by the owners of the data and/or the authors of the corpus."},
   "license": {
     "title": "Default: Creative Commons Attribution-ShareAlike (CC BY-SA).",
     "humanReadable": "This license lets others remix, tweak, and build upon your work even for commercial purposes, as long as they credit you and license their new creations under the identical terms. This license is often compared to “copyleft” free and open source software licenses. All new works based on yours will carry the same license, so any derivatives will also allow commercial use. This is the license used by Wikipedia, and is recommended for materials that would benefit from incorporating content from Wikipedia and similarly licensed projects.",
@@ -115,6 +115,7 @@ module.exports = {
     "encrypted": "",
     "shouldBeEncrypted": "",
     "help": "The user who originally entered the datum",
+    "readonly": true,
     "showToUserTypes": "readonly",
     "userchooseable": "disabled"
   }, {
@@ -124,6 +125,7 @@ module.exports = {
     "encrypted": "",
     "shouldBeEncrypted": "",
     "help": "An array of users who modified the datum",
+    "readonly": true,
     "users": [],
     "showToUserTypes": "readonly",
     "userchooseable": "disabled"
