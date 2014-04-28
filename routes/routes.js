@@ -37,6 +37,7 @@ var setup = function(api, apiVersion) {
 	swagger.addPost(corporaRoutes.postCorpora);
 	swagger.addPut(corporaRoutes.putCorpora);
 	swagger.addDelete(corporaRoutes.deleteCorpora);
+	swagger.addSearch(corporaRoutes.searchCorpora);
 
 	swagger.addGet(dataRoutes.getData);
 	swagger.addPost(dataRoutes.postData);
