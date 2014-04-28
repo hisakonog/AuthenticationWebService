@@ -1,65 +1,72 @@
 /* Load modules provided by $ npm install, see package.json for details */
 var swagger = require('swagger-node-express');
 var param = require('../node_modules/swagger-node-express/Common/node/paramTypes.js');
-var diacritics = require('diacritics');
-
-/* Load modules provided by this codebase */
-var UserLib = require('../../FieldDB/api/user/UserGeneric');
-var CorpusConnectionLib = require('../../FieldDB/api/corpus/CorpusConnection');
 var appVersion = require('../package.json').version;
 
-
-var defaultCorpusConnectionFactory = new CorpusConnectionLib({
-	'dbname': 'public-firstcorpus'
-}, diacritics);
-var UserFactory = new UserLib(appVersion, defaultCorpusConnectionFactory, diacritics);
-
-
-/* export functions which can be used as API routes */
-
-exports.appVersion = appVersion;
-exports.UserSchema = UserFactory.baseSchema;
-exports.CorpusConnectionSchema = defaultCorpusConnectionFactory.baseSchema;
-
-exports.createUserByUsername = {
+exports.getUsers = {
 	'spec': {
-		'path': '/user/{username}',
+		'path': '/users/{username}',
+		'description': 'Operations about users accounts',
+		'notes': 'Requests users details if authenticated',
+		'summary': 'Retrieves user(s)',
+		'method': 'GET',
+		'parameters': [param.path('username', 'requested username of the user to be created', 'string')],
+		'responseClass': 'User',
+		'errorResponses': [swagger.errors.invalid('username'), swagger.errors.notFound('user')],
+		'nickname': 'getUsers'
+	},
+	'action': function(req, res, next) {
+		res.send({});
+	}
+};
+
+exports.postUsers = {
+	'spec': {
+		'path': '/users/{username}',
 		'description': 'Operations about users accounts',
 		'notes': 'Registers a user for a given username',
 		'summary': 'Register user(s)',
 		'method': 'POST',
-		'parameters': [param.path('username', 'requested username of the user to be created', 'string')
-		],
+		'parameters': [param.path('username', 'requested username of the user to be created', 'string')],
 		'responseClass': 'User',
 		'errorResponses': [swagger.errors.invalid('username'), swagger.errors.notFound('user')],
-		'nickname': 'createUserByUsername'
+		'nickname': 'postUsers'
 	},
 	'action': function(req, res, next) {
-		console.log('Request for register.');
-		if (!req.params.username) {
-			throw swagger.errors.invalid('username');
-		}
-		var username = req.params.username;
-		try {
+		res.send({});
+	}
+};
 
-			var newUsersCorpusConnection = defaultCorpusConnectionFactory.set(null, {
-				dbname: username + '-firstcorpus'
-			});
+exports.putUsers = {
+	'spec': {
+		'path': '/users/{username}',
+		'description': 'Operations about users accounts',
+		'notes': 'Updates users details if authenticated',
+		'summary': 'Updates user(s)',
+		'method': 'PUT',
+		'parameters': [param.path('username', 'requested username of the user to be created', 'string')],
+		'responseClass': 'User',
+		'errorResponses': [swagger.errors.invalid('username'), swagger.errors.notFound('user')],
+		'nickname': 'putUsers'
+	},
+	'action': function(req, res, next) {
+		res.send({});
+	}
+};
 
-			var user = UserFactory.set(null, {
-				username: username
-			}, newUsersCorpusConnection);
-
-			if (user) {
-				console.log(new Date() + ' Registered new user ' + user.username);
-				res.send(user);
-			} else {
-				throw swagger.errors.notFound('user');
-			}
-
-		} catch (e) {
-			console.log('hi');
-			throw swagger.errors.invalid('username');
-		}
+exports.deleteUsers = {
+	'spec': {
+		'path': '/users/{username}',
+		'description': 'Operations about users accounts',
+		'notes': 'Deletes user acount if authenticated',
+		'summary': 'Deletes user(s)',
+		'method': 'PUT',
+		'parameters': [param.path('username', 'requested username of the user to be created', 'string')],
+		'responseClass': 'User',
+		'errorResponses': [swagger.errors.invalid('username'), swagger.errors.notFound('user')],
+		'nickname': 'deleteUsers'
+	},
+	'action': function(req, res, next) {
+		res.send({});
 	}
 };
