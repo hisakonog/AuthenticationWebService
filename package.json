@@ -23,17 +23,17 @@
     "Fieldlinguist <info@fieldlinguist.com>"
   ],
   "dependencies": {
-    "bcrypt": "^0.7.6",
+    "bcrypt": "0.7.6",
     "cors": "*",
     "cradle": "*",
     "diacritics" : "1.0.0",
-    "express": "^3.3.7",
+    "express": "3.3.7",
     "MD5": "*",
-    "nano": "^4.1.1",
-    "nodemailer": "^0.5.2",
+    "nano": "4.1.1",
+    "nodemailer": "0.5.2",
     "swagger-node-express": "*",
-    "underscore": "^1.5.1",
-    "uuid": "^1.4.1"
+    "underscore": "1.5.1",
+    "uuid": "1.4.1"
   },
   "peerDependencies": {
     "fielddb-api": "*",
