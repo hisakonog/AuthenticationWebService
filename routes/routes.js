@@ -60,6 +60,6 @@ var setup = function(api) {
 	swagger.addDelete(morphologicalParsesRoutes.deleteMorphologicalParses);
 
 
-	swagger.configure('https://localhost:3183', userRoutes.appVersion);
+	swagger.configure('https://localhost:3181', userRoutes.appVersion);
 };
 exports.setup = setup;
