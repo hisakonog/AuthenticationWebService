@@ -2,14 +2,13 @@
   "name": "FieldDBAuthenticationService",
   "version": "1.28.1",
   "dependencies": {
-    "express": "^3.3.7",
-    "bcrypt": "^0.7.6",
-    "forever": "^0.10.8",
-    "nano": "^4.1.1",
-    "nodemailer": "^0.5.2",
-    "MD5": "^1.1.0",
-    "cradle": "^0.6.6",
-    "underscore": "^1.5.1",
-    "uuid": "^1.4.1"
+    "express": "3.3.7",
+    "bcrypt": "0.7.6",
+    "nano": "4.1.1",
+    "nodemailer": "0.5.2",
+    "MD5": "1.1.0",
+    "cradle": "0.6.6",
+    "underscore": "1.5.1",
+    "uuid": "1.4.1"
   }
 }
