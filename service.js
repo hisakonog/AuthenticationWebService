@@ -318,13 +318,37 @@ app.post('/newcorpus', function(req, res, next) {
     if (err) {
       console.log(new Date() + " There was an error in the authenticationfunctions.authenticateUser:\n" + util.inspect(err));
       returndata.userFriendlyErrors = [info.message];
+      res.send(returndata);
+      var cors_headers = build_headers_from_request(req);
+      for (var key in cors_headers) {
+        value = cors_headers[key];
+        res.setHeader(key, value);
+      }
+      return;
     }
     if (!user) {
       returndata.userFriendlyErrors = [info.message];
+      res.send(returndata);
+      var cors_headers = build_headers_from_request(req);
+      for (var key in cors_headers) {
+        value = cors_headers[key];
+        res.setHeader(key, value);
+      }
+      return;
     } else {
       returndata.corpusadded = true;
       returndata.info = [info.message];
 
+      if (!req.body.newCorpusName) {
+        returndata.userFriendlyErrors = ["Corpus title was not provided."];
+        res.send(returndata);
+        var cors_headers = build_headers_from_request(req);
+        for (var key in cors_headers) {
+          value = cors_headers[key];
+          res.setHeader(key, value);
+        }
+        return;
+      }
       // Add a new corpus for the user
       corpus.createNewCorpus(req, function(err, corpus, info) {
         if (err) {
