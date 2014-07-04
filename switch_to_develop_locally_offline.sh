@@ -2,8 +2,8 @@
 
 echo ""
 echo "Put the Node server to act as the localhost server"
-sed 's/nodeconfig_[^)]*)/nodeconfig_local")/' service.js  > output
-mv output service.js
+sed 's/nodeconfig_[^)]*)/nodeconfig_local")/' auth_service.js  > output
+mv output auth_service.js
 
 sed 's/nodeconfig_[^)]*)/nodeconfig_local")/' lib/userauthentication.js  > output
 mv output lib/userauthentication.js

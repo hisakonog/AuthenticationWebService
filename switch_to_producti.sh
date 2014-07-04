@@ -2,8 +2,8 @@
 
 echo ""
 echo "Put the Node server to act as the production server"
-sed 's/nodeconfig_[^)]*)/nodeconfig_production")/' service.js  > output
-mv output service.js
+sed 's/nodeconfig_[^)]*)/nodeconfig_production")/' auth_service.js  > output
+mv output auth_service.js
 
 sed 's/nodeconfig_[^)]*)/nodeconfig_production")/' lib/userauthentication.js  > output
 mv output lib/userauthentication.js
