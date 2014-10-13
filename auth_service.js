@@ -22,7 +22,7 @@ app.configure(function() {
     secret: 'CtlFYUMLl1VdIr35'
   }));
   app.use(app.router);
-  app.use(express.static(__dirname + '/../../public'));
+  //app.use(express.static(__dirname + '/../../public'));
 });
 
 /*
@@ -420,6 +420,14 @@ app.post('/updateroles', function(req, res, next) {
   });
 });
 
+app.get('/', function(req, res, next) {
+  var cors_headers = build_headers_from_request(req);
+  for (var key in cors_headers) {
+    value = cors_headers[key];
+    res.setHeader(key, value);
+  }
+  res.send({info: "Service is running normally."});
+});
 
 https.createServer(node_config.httpsOptions, app).listen(node_config.port);
 // app.listen(node_config.port);
