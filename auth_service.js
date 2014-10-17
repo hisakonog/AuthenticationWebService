@@ -22,7 +22,7 @@ app.configure(function() {
     secret: 'CtlFYUMLl1VdIr35'
   }));
   app.use(app.router);
-  app.use(express.static(__dirname + '/../../public'));
+  //app.use(express.static(__dirname + '/../../public'));
 });
 
 /*
@@ -83,7 +83,7 @@ app.post('/login', function(req, res, next) {
       delete returndata.user.password;
       delete returndata.user.serverlogs;
       returndata.info = [info.message];
-      console.log(new Date() + " Returning the existing user as json:\n" + util.inspect(user));
+      //console.log(new Date() + " Returning the existing user as json:\n" + util.inspect(user));
     }
     console.log(new Date() + " Returning response:\n" + util.inspect(returndata));
     var cors_headers = build_headers_from_request(req);
@@ -236,8 +236,8 @@ app.post('/corpusteam', function(req, res, next) {
       returndata.info = [info.message];
       // returndata.userFriendlyErrors = ["Faking an error to test"];
     }
-    console.log(new Date() + " Returning response:\n" + util.inspect(returndata));
-    console.log(new Date() + " Returning the list of users on this corpus as json:\n" + util.inspect(returndata.users));
+    //console.log(new Date() + " Returning response:\n" + util.inspect(returndata));
+    console.log(new Date() + " Returning the list of reader users on this corpus as json:\n" + util.inspect(returndata.users.readers));
     var cors_headers = build_headers_from_request(req);
     for (var key in cors_headers) {
       value = cors_headers[key];
@@ -420,6 +420,14 @@ app.post('/updateroles', function(req, res, next) {
   });
 });
 
+app.get('/', function(req, res, next) {
+  var cors_headers = build_headers_from_request(req);
+  for (var key in cors_headers) {
+    value = cors_headers[key];
+    res.setHeader(key, value);
+  }
+  res.send({info: "Service is running normally."});
+});
 
 https.createServer(node_config.httpsOptions, app).listen(node_config.port);
 // app.listen(node_config.port);
