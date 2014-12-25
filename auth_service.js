@@ -1,3 +1,4 @@
+
 var https = require('https'),
   express = require('express'),
   authenticationfunctions = require('./lib/userauthentication.js'),
@@ -237,7 +238,10 @@ app.post('/corpusteam', function(req, res, next) {
       // returndata.userFriendlyErrors = ["Faking an error to test"];
     }
     //console.log(new Date() + " Returning response:\n" + util.inspect(returndata));
-    console.log(new Date() + " Returning the list of reader users on this corpus as json:\n" + util.inspect(returndata.users.readers));
+    console.log(new Date() + " Returning the list of reader users on this corpus as json:");
+    if (returndata && returndata.users) {
+      console.log(util.inspect(returndata.users.readers));
+    }
     var cors_headers = build_headers_from_request(req);
     for (var key in cors_headers) {
       value = cors_headers[key];
