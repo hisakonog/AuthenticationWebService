@@ -3,7 +3,7 @@
   "version": "2.36.30.16.09",
   "dependencies": {
     "express": "3.3.7",
-    "bcrypt": "0.7.6",
+    "bcrypt": "0.8.1",
     "nano": "4.1.1",
     "nodemailer": "0.5.2",
     "MD5": "1.1.0",
