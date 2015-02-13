@@ -1,11 +1,11 @@
 #!/bin/bash
 
+whoami
+echo "logs are in $PM2_HOME/logs"
+
 cd $FIELDDB_HOME/AuthenticationWebService
 bash switch_to_producti.sh 
 
-forever \
+pm2 \
 start \
--al $FIELDDB_HOME/logs/fielddbauth.log \
--ao $FIELDDB_HOME/logs/fielddbauthout.log \
--ae $FIELDDB_HOME/logs/fielddbautherr.log \
 auth_service.js

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-forever stop auth_service.js
+pm2  stop auth_service.js
 
 cd $FIELDDB_HOME/AuthenticationWebService
 bash switch_to_develop_easy_setup.sh
