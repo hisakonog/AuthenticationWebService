@@ -278,15 +278,13 @@ var addDeprecatedRoutes = function(app, node_config) {
         res.status(err.status || 400);
         returndata.status = err.status || 400;
         console.log(new Date() + " There was an error in the authenticationfunctions.authenticateUser:\n" + util.inspect(err));
-        returndata.userFriendlyErrors = "Please supply a username and password to ensure this is you.";
+        returndata.userFriendlyErrors = [info.message];
         res.send(returndata);
         return;
       }
       if (!user) {
         returndata.userFriendlyErrors = [info.message];
       } else {
-        returndata.roleadded = true;
-        returndata.info = [info.message];
 
         // Add a role to the user
         authenticationfunctions.addRoleToUser(req, function(err, roles, info) {

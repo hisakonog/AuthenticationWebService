@@ -310,18 +310,53 @@ if [[ $result =~ userFriendlyErrors ]]
 fi 
 
 echo ""
-echo "It should accept addroletouser"
+echo "It should refuse to addroletouser if the corpus is missing"
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{"username": "jenkins", "password": "phoneme" }' \
+$SERVER/addroletouser `"
+echo ""
+echo "Response: $result";
+if [[ $result =~ userFriendlyErrors ]]
+  then {
+    echo "sever refused, this is good."
+  } else {
+    TESTFAILED=$[TESTFAILED + 1]
+    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should refuse to addroletouser if the corpus is missing"
+  }
+fi 
+
+echo ""
+echo "It should accept addroletouser from the backbone app. eg: "
+echo '  //Send username to limit the requests so only valid users can get a user list'
+echo '  dataToPost.username = this.get("userPrivate").get("username");'
+echo '  dataToPost.couchConnection = window.app.get("corpus").get("couchConnection");'
+echo ""
+TESTCOUNT=$[TESTCOUNT + 1]
+result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{"username": "jenkins", "password": "phoneme", "userToAddToRole": "testingprototype", "roles": ["reader","commenter"], "couchConnection": {"pouchname": "jenkins-firstcorpus"} }' \
 $SERVER/addroletouser `"
 echo ""
 echo "Response: $result";
 if [[ $result =~ userFriendlyErrors ]]
   then {
     TESTFAILED=$[TESTFAILED + 1]
-    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept addroletouser"
+    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept addroletouser from the spreadsheet app"
+  } else {
+    if [[ $result =~ readers ]]
+      then {
+        echo "Response: $result" | grep -C 4 readers;
+        echo " server replied with team details to a prototype-like request."
+      } else {
+        TESTFAILED=$[TESTFAILED + 1]
+        TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should reply with corpus team details"
+      }
+    fi 
   }
 fi 
+
 
 echo ""
 echo "It should accept newcorpus"
