@@ -35,14 +35,23 @@ module.exports = function(grunt) {
         tasks: ['jshint:test', 'nodeunit']
       },
     },
+    exec: {
+      curl_tests: {
+        cmd: function() {
+          return "bash test/routes/deprecated.sh";
+        }
+      }
+    }
   });
 
   // These plugins provide necessary tasks.
   grunt.loadNpmTasks('grunt-contrib-nodeunit');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks("grunt-exec");
 
   // Default task.
-  grunt.registerTask('default', ['jshint', 'nodeunit']);
+  grunt.registerTask('default', ['jshint', 'nodeunit', 'exec:curl_tests']);
+  grunt.registerTask('test', ['nodeunit', 'exec:curl_tests']);
 
 };
