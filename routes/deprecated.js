@@ -353,11 +353,11 @@ var addDeprecatedRoutes = function(app, node_config) {
         res.send(returndata);
         return;
       } else {
-        returndata.corpusadded = true;
-        returndata.info = [info.message];
 
         if (!req.body.newCorpusName) {
-          returndata.userFriendlyErrors = ["Corpus title was not provided."];
+          res.status(412);
+          returndata.status = 412;
+          returndata.userFriendlyErrors = ["This app has made an invalid request. Please notify its developer. missing: newCorpusName"];
           var cors_headers = build_headers_from_request(req);
           for (var key in cors_headers) {
             value = cors_headers[key];
@@ -366,16 +366,22 @@ var addDeprecatedRoutes = function(app, node_config) {
           res.send(returndata);
           return;
         }
+
+        returndata.corpusadded = true;
+        returndata.info = [info.message];
         // Add a new corpus for the user
         corpus.createNewCorpus(req, function(err, corpus, info) {
           if (err) {
             res.status(err.status || 400);
             returndata.status = err.status || 400;
             console.log(new Date() + " There was an error in corpus.createNewCorpus");
-            returndata.userFriendlyErrors = ["There was an error creating your corpus. " + req.body.newCorpusName];
+            returndata.userFriendlyErrors = [info.message]; //["There was an error creating your corpus. " + req.body.newCorpusName];
+            if (err.status === 302) {
+              returndata.corpusadded = true;
+            }
           }
           if (!corpus) {
-            returndata.userFriendlyErrors = ["There was an error creating your corpus. " + req.body.newCorpusName];
+            returndata.userFriendlyErrors = [info.message]; //["There was an error creating your corpus. " + req.body.newCorpusName];
           } else {
             returndata.corpusadded = true;
             returndata.info = ["Corpus " + corpus.title + " created successfully."];

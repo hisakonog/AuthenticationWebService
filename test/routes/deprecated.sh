@@ -359,7 +359,7 @@ fi
 
 
 echo ""
-echo "It should accept newcorpus"
+echo "It should refuse newcorpus if the title is not specified"
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
 -H "Content-Type: application/json" \
@@ -369,10 +369,39 @@ echo ""
 echo "Response: $result";
 if [[ $result =~ userFriendlyErrors ]]
   then {
+    echo "sever refused, this is good."
+  } else {
     TESTFAILED=$[TESTFAILED + 1]
-    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept newcorpus"
+    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should refuse newcorpus if the title is not specified"
   }
 fi 
+
+echo ""
+echo "It should not complain if users tries to recreate a newcorpus"
+TESTCOUNT=$[TESTCOUNT + 1]
+result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{"username": "jenkins", "password": "phoneme", "newCorpusName": "My new corpus title"}' \
+$SERVER/newcorpus `"
+echo ""
+echo "Response: $result";
+if [[ $result =~ userFriendlyErrors ]]
+  then {
+    TESTFAILED=$[TESTFAILED + 1]
+    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should not complain if users tries to recreate a newcorpus"
+  } else {
+    if [[ $result =~ 302 ]]
+      then {
+        echo "Response: $result" | grep -C 2 my_new_corpus_title;
+        echo " server replied with new corpus details."
+      } else {
+        TESTFAILED=$[TESTFAILED + 1]
+        TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should reply with a 302 status code"
+      }
+    fi 
+  }
+fi 
+
 
 echo ""
 echo "It should accept updateroles"
