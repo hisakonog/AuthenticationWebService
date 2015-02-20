@@ -30,85 +30,92 @@ TESTCOUNTEXPECTED=5;
 SERVER="https://localhost:3183";
 if [ "$NODE_DEPLOY_TARGET" == "production" ]; then
   SERVER="http://localhost:3183";
+  echo ""
   echo "Using $SERVER"
 else
+  echo ""
   echo "Using $SERVER"
 fi
 
+echo ""
 echo "It should accept login"
 TESTCOUNT=$[TESTCOUNT + 1]
-curl -k POST \
+result="`curl -kX POST \
 -d '{}' \
- $SERVER/login ||{
-	TESTFAILED=$[TESTFAILED + 1]
-  TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept short audio"
-};
+$SERVER/login `"
+echo ""
+echo "Response: $result";
+if [[ $result =~ userFriendlyErrors ]]
+  then {
+   TESTFAILED=$[TESTFAILED + 1]
+   TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept login"
+ }
+fi 
 
-echo "It should accept registration of new users"
+echo ""
+echo "It should accept register"
 TESTCOUNT=$[TESTCOUNT + 1]
-curl -k POST \
+result="`curl -kX POST \
 -d '{}' \
- $SERVER/register ||{
-	TESTFAILED=$[TESTFAILED + 1]
-  TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept amr audio from androids"
-};
+$SERVER/register `"
+echo ""
+echo "Response: $result";
+if [[ $result =~ userFriendlyErrors ]]
+  then {
+    TESTFAILED=$[TESTFAILED + 1]
+    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept register"
+  }
+fi 
 
+echo ""
 echo "It should accept changepassword"
 TESTCOUNT=$[TESTCOUNT + 1]
-curl -k POST \
+result="`curl -kX POST \
 -d '{}' \
- $SERVER/changepassword ||{
-  TESTFAILED=$[TESTFAILED + 1]
-  TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept multiple files"
-};
+$SERVER/changepassword `"
+echo ""
+echo "Response: $result";
+if [[ $result =~ userFriendlyErrors ]]
+  then {
+    TESTFAILED=$[TESTFAILED + 1]
+    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept changepassword"
+  }
+fi 
 
+echo ""
 echo "It should accept corpusteam"
 TESTCOUNT=$[TESTCOUNT + 1]
-curl -k POST \
+result="`curl -kX POST \
 -d '{}' \
- $SERVER/corpusteam ||{
-  TESTFAILED=$[TESTFAILED + 1]
-  TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept multiple files"
-};
+$SERVER/corpusteam `"
+echo ""
+echo "Response: $result";
+if [[ $result =~ userFriendlyErrors ]]
+  then {
+    TESTFAILED=$[TESTFAILED + 1]
+    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept corpusteam"
+  }
+fi 
 
-echo "It should accept addroletouser"
-TESTCOUNT=$[TESTCOUNT + 1]
-curl -k POST \
--d '{}' \
- $SERVER/addroletouser ||{
-  TESTFAILED=$[TESTFAILED + 1]
-  TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept multiple files"
-};
 
-echo "It should accept addroletouser"
-TESTCOUNT=$[TESTCOUNT + 1]
-curl -k POST \
--d '{}' \
- $SERVER/addroletouser ||{
-	TESTFAILED=$[TESTFAILED + 1]
-  TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept multiple files"
-};
-
+echo ""
 echo "It should accept newcorpus"
 TESTCOUNT=$[TESTCOUNT + 1]
-curl -k POST \
+result="`curl -kX POST \
 -d '{}' \
- $SERVER/newcorpus ||{
-	TESTFAILED=$[TESTFAILED + 1]
-  TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept long movies"
-};
-
-echo "It should accept updateroles"
-TESTCOUNT=$[TESTCOUNT + 1]
-curl -k POST \
--d '{}' \
- $SERVER/updateroles ||{
-  TESTFAILED=$[TESTFAILED + 1]
-  TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept .raw audio (from android pocketsphinx and other)"
-};
+$SERVER/newcorpus `"
+echo ""
+echo "Response: $result";
+if [[ $result =~ userFriendlyErrors ]]
+  then {
+    TESTFAILED=$[TESTFAILED + 1]
+    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept newcorpus"
+  }
+fi 
 
 echo;
 echo;
+echo ""
 echo "Result";
 echo;
 
@@ -129,7 +136,7 @@ fi
 
 
 # ls noqata_tusunayawami.mp3 || {
-# 	curl -O --retry 999 --retry-max-time 0 -C - https://github.com/OpenSourceFieldlinguistics/FieldDB/blob/master/sample_data/noqata_tusunayawami.mp3?raw=true
+# 	result="`curl -O --retry 999 --retry-max-time 0 -C - https://github.com/OpenSourceFieldlinguistics/FieldDB/blob/master/sample_data/noqata_tusunayawami.mp3?raw=true
 # 	mv "noqata_tusunayawami.mp3?raw=true" noqata_tusunayawami.mp3
 # }
 
