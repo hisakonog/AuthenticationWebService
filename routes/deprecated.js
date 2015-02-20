@@ -173,6 +173,7 @@ var addDeprecatedRoutes = function(app, node_config) {
     res.status(401);
     if (newpassword !== confirmpassword) {
       res.send({
+        status: 406,
         userFriendlyErrors: ["New passwords do not match, please try again."]
       });
       return;

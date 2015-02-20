@@ -24,7 +24,7 @@ TESTCOUNT=0;
 TESTFAILED=0;
 TESTSFAILEDSTRING="";
 TESTPASSED=0;
-TESTCOUNTEXPECTED=5;
+TESTCOUNTEXPECTED=8;
 
 # Production server is using http behind nginx
 SERVER="https://localhost:3183";
@@ -52,9 +52,17 @@ if [[ $result =~ userFriendlyErrors ]]
    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept login"
  }
 fi 
+if [[ $result =~ "\"lastname\": \"\"" ]]
+  then {
+    echo "Details recieved, you can use this user object in your app settings for this user."
+  } else  {
+   TESTFAILED=$[TESTFAILED + 1]
+   TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should return user details upon successful login"
+ }
+fi 
 
 echo ""
-echo "It should accept register"
+echo "It should refuse to register existing names"
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
 -H "Content-Type: application/json" \
@@ -64,8 +72,28 @@ echo ""
 echo "Response: $result";
 if [[ $result =~ userFriendlyErrors ]]
   then {
+    echo " server refused."
+  } else {
     TESTFAILED=$[TESTFAILED + 1]
-    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept register"
+    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should refuse to register existing names"
+  }
+fi 
+
+echo ""
+echo "It should refuse to register short usernames"
+TESTCOUNT=$[TESTCOUNT + 1]
+result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{"username": "ba", "password": "phoneme"}' \
+$SERVER/register `"
+echo ""
+echo "Response: $result";
+if [[ $result =~ userFriendlyErrors ]]
+  then {
+    echo " server refused."
+  } else {
+    TESTFAILED=$[TESTFAILED + 1]
+    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should refuse to register short usernames"
   }
 fi 
 
@@ -74,7 +102,7 @@ echo "It should accept changepassword"
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
 -H "Content-Type: application/json" \
--d '{"username": "jenkins", "password": "phoneme"}' \
+-d '{"username": "jenkins", "password": "phoneme", "newpassword": "phoneme", "confirmpassword": "phoneme"}' \
 $SERVER/changepassword `"
 echo ""
 echo "Response: $result";
@@ -84,6 +112,44 @@ if [[ $result =~ userFriendlyErrors ]]
     TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept changepassword"
   }
 fi 
+
+echo ""
+echo "It should refuse to changepassword if the new password is missing"
+TESTCOUNT=$[TESTCOUNT + 1]
+result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{"username": "jenkins", "password": "phoneme"}' \
+$SERVER/changepassword `"
+echo ""
+echo "Response: $result";
+if [[ $result =~ userFriendlyErrors ]]
+  then {
+    echo " server refused."
+  } else {
+    TESTFAILED=$[TESTFAILED + 1]
+    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should refuse to changepassword if the new password is missing"
+  }
+fi 
+
+echo ""
+echo "It should refuse to changepassword if the confirm password doesnt match"
+TESTCOUNT=$[TESTCOUNT + 1]
+result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{"username": "jenkins", "password": "phoneme", "newpassword": "phoneme", "confirmpassword": "phonem"}' \
+$SERVER/changepassword `"
+echo ""
+echo "Response: $result";
+if [[ $result =~ userFriendlyErrors ]]
+  then {
+    echo " server refused."
+  } else {
+    TESTFAILED=$[TESTFAILED + 1]
+    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should refuse to changepassword if the confirm password doesnt match"
+  }
+fi 
+
+
 
 echo ""
 echo "It should accept corpusteam"
@@ -156,7 +222,7 @@ if [ $TESTPASSED = $TESTCOUNT ]; then
  coloredEcho  "$TESTPASSED passed of $TESTCOUNT" green
 else
   coloredEcho  "$TESTPASSED passed of $TESTCOUNT" red
-  coloredEcho  " $TESTFAILED tests failed" red
+  coloredEcho  " $TESTFAILED failed" red
   coloredEcho " $TESTSFAILEDSTRING" red
 fi
 
