@@ -407,7 +407,9 @@ var addDeprecatedRoutes = function(app, node_config) {
      */
   app.post('/updateroles', function(req, res, next) {
     authenticationfunctions.authenticateUser(req.body.username, req.body.password, req, function(err, user, info) {
-      var returndata = {};
+      var returndata = {
+        depcrecated: true
+      };
       if (err) {
         res.status(err.status || 400);
         returndata.status = err.status || 400;

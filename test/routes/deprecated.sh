@@ -24,7 +24,7 @@ TESTCOUNT=0;
 TESTFAILED=0;
 TESTSFAILEDSTRING="";
 TESTPASSED=0;
-TESTCOUNTEXPECTED=8;
+TESTCOUNTEXPECTED=18;
 
 # Production server is using http behind nginx
 SERVER="https://localhost:3183";
@@ -243,7 +243,7 @@ if [[ $result =~ userFriendlyErrors ]]
     echo "server refused, this is good."
   } else {
     TESTFAILED=$[TESTFAILED + 1]
-    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept corpusteam from the spreadsheet app"
+    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should refuse to tell a corpusteam details if the username is not a valid user and on that team."
   }
 fi 
 
@@ -263,7 +263,7 @@ if [[ $result =~ userFriendlyErrors ]]
   then {
     echo "Response: $result";
     TESTFAILED=$[TESTFAILED + 1]
-    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept corpusteam from the spreadsheet app"
+    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should reply with corpusteam details for backbone"
   } else {
     if [[ $result =~ readers ]]
       then {
@@ -271,7 +271,7 @@ if [[ $result =~ userFriendlyErrors ]]
         echo " server replied with team details to a prototype-like request."
       } else {
         TESTFAILED=$[TESTFAILED + 1]
-        TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should reply with corpus team details"
+        TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should reply with corpusteam details for backbone"
       }
     fi 
   }
@@ -300,7 +300,7 @@ if [[ $result =~ userFriendlyErrors ]]
     if [[ $result =~ readers ]]
       then {
         echo "Response: $result" | grep -C 4 readers;
-        echo " server replied with team details a spreadsheet-like request"
+        echo " server replied with team details to a spreadsheet-like request"
       } else {
         TESTFAILED=$[TESTFAILED + 1]
         TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should reply with corpus team details"
@@ -343,15 +343,15 @@ echo "Response: $result";
 if [[ $result =~ userFriendlyErrors ]]
   then {
     TESTFAILED=$[TESTFAILED + 1]
-    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept addroletouser from the spreadsheet app"
+    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept addroletouser from the backbone app"
   } else {
-    if [[ $result =~ readers ]]
+    if [[ $result =~ "Added role(s) to user" ]]
       then {
         echo "Response: $result" | grep -C 4 readers;
-        echo " server replied with team details to a prototype-like request."
+        echo " server replied with addroletouser details to a prototype-like request."
       } else {
         TESTFAILED=$[TESTFAILED + 1]
-        TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should reply with corpus team details"
+        TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should reply with addroletouser team details for backbone"
       }
     fi 
   }
@@ -387,13 +387,12 @@ echo ""
 echo "Response: $result";
 if [[ $result =~ userFriendlyErrors ]]
   then {
-    TESTFAILED=$[TESTFAILED + 1]
-    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should not complain if users tries to recreate a newcorpus"
-  } else {
+   echo "server replied with user friendly errors, which is okay"
+   } else {
     if [[ $result =~ 302 ]]
       then {
         echo "Response: $result" | grep -C 2 my_new_corpus_title;
-        echo " server replied with new corpus details."
+        echo " server replied with a 302 status saying it existed."
       } else {
         TESTFAILED=$[TESTFAILED + 1]
         TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should reply with a 302 status code"
@@ -402,11 +401,77 @@ if [[ $result =~ userFriendlyErrors ]]
   }
 fi 
 
-
 echo ""
-echo "It should accept updateroles"
+echo "It should accept updateroles from the spreadsheet app eg"
+echo 'file://angular_client/modules/spreadsheet/app/scripts/controllers/SpreadsheetController.js '
+echo '      dataToPost.userRoleInfo = {};'
+echo '      dataToPost.userRoleInfo.usernameToModify = userid;'
+echo '      dataToPost.userRoleInfo.pouchname = $rootScope.corpus.pouchname;'
+echo '      //dataToPost.userRoleInfo.removeUser = true;'
+echo '      switch (newUserRoles.role) {'
+echo '      /*'
+echo '            NOTE THESE ROLES are not accurate reflections of the db roles,'
+echo '            they are a simplification which assumes the'
+echo '            admin -> writer -> commenter -> reader type of system.'
+echo ''
+echo '            Infact some users (technical support or project coordinators) might be only admin,'
+echo '            and some experiment participants might be only writers and'
+echo '            cant see each others data.'
+echo ''
+echo '            Probably the clients wanted the spreadsheet roles to appear implicative since its more common.'
+echo '            see https://github.com/OpenSourceFieldlinguistics/FieldDB/issues/1113'
+echo '          */'
+echo '      case "admin":'
+echo '        newUserRoles.admin = true;'
+echo '        newUserRoles.reader = true;'
+echo '        newUserRoles.commenter = true;'
+echo '        newUserRoles.writer = true;'
+echo '        rolesString += " Admin";'
+echo '        break;'
+echo '      case "read_write":'
+echo '        newUserRoles.admin = false;'
+echo '        newUserRoles.reader = true;'
+echo '        newUserRoles.commenter = true;'
+echo '        newUserRoles.writer = true;'
+echo '        rolesString += " Writer Reader";'
+echo '        break;'
+echo '      case "read_only":'
+echo '        newUserRoles.admin = false;'
+echo '        newUserRoles.reader = true;'
+echo '        newUserRoles.commenter = false;'
+echo '        newUserRoles.writer = false;'
+echo '        rolesString += " Reader";'
+echo '        break;'
+echo '      case "read_comment_only":'
+echo '        newUserRoles.admin = false;'
+echo '        newUserRoles.reader = true;'
+echo '        newUserRoles.commenter = true;'
+echo '        newUserRoles.writer = false;'
+echo '        rolesString += " Reader Commenter";'
+echo '        break;'
+echo '      case "write_only":'
+echo '        newUserRoles.admin = false;'
+echo '        newUserRoles.reader = false;'
+echo '        newUserRoles.commenter = true;'
+echo '        newUserRoles.writer = true;'
+echo '        rolesString += " Writer";'
+echo '        break;'
+echo '    }'
+echo ''
+echo '    newUserRoles.pouchname = $rootScope.corpus.pouchname;'
+echo ''
+echo '    var dataToPost = {};'
+echo '    dataToPost.username = $rootScope.user.username.trim();'
+echo '    dataToPost.password = $rootScope.loginInfo.password.trim();'
+echo '    dataToPost.serverCode = $rootScope.serverCode;'
+echo '    dataToPost.authUrl = Servers.getServiceUrl($rootScope.serverCode, "auth");'
+echo ''
+echo '    dataToPost.userRoleInfo = newUserRoles;'
+echo '    '
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{"username": "jenkins", "password": "phoneme", "serverCode": "localhost", "userRoleInfo": {"usernameToModify": "testingprototype", "pouchname": "jenkins-firstcorpus", "admin": false, "writer": true, "reader": true, "commenter": true }}' \
 $SERVER/updateroles `"
 echo ""
 echo "Response: $result";
