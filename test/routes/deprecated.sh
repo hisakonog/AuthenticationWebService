@@ -41,7 +41,8 @@ echo ""
 echo "It should accept login"
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
--d '{}' \
+-H "Content-Type: application/json" \
+-d '{"username": "jenkins", "password": "phoneme"}' \
 $SERVER/login `"
 echo ""
 echo "Response: $result";
@@ -56,7 +57,8 @@ echo ""
 echo "It should accept register"
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
--d '{}' \
+-H "Content-Type: application/json" \
+-d '{"username": "jenkins", "password": "phoneme"}' \
 $SERVER/register `"
 echo ""
 echo "Response: $result";
@@ -71,7 +73,8 @@ echo ""
 echo "It should accept changepassword"
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
--d '{}' \
+-H "Content-Type: application/json" \
+-d '{"username": "jenkins", "password": "phoneme"}' \
 $SERVER/changepassword `"
 echo ""
 echo "Response: $result";
@@ -86,7 +89,8 @@ echo ""
 echo "It should accept corpusteam"
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
--d '{}' \
+-H "Content-Type: application/json" \
+-d '{"username": "jenkins", "password": "phoneme"}' \
 $SERVER/corpusteam `"
 echo ""
 echo "Response: $result";
@@ -97,12 +101,26 @@ if [[ $result =~ userFriendlyErrors ]]
   }
 fi 
 
+echo ""
+echo "It should accept addroletouser"
+TESTCOUNT=$[TESTCOUNT + 1]
+result="`curl -kX POST \
+$SERVER/addroletouser `"
+echo ""
+echo "Response: $result";
+if [[ $result =~ userFriendlyErrors ]]
+  then {
+    TESTFAILED=$[TESTFAILED + 1]
+    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept addroletouser"
+  }
+fi 
 
 echo ""
 echo "It should accept newcorpus"
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
--d '{}' \
+-H "Content-Type: application/json" \
+-d '{"username": "jenkins", "password": "phoneme"}' \
 $SERVER/newcorpus `"
 echo ""
 echo "Response: $result";
@@ -110,6 +128,20 @@ if [[ $result =~ userFriendlyErrors ]]
   then {
     TESTFAILED=$[TESTFAILED + 1]
     TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept newcorpus"
+  }
+fi 
+
+echo ""
+echo "It should accept updateroles"
+TESTCOUNT=$[TESTCOUNT + 1]
+result="`curl -kX POST \
+$SERVER/updateroles `"
+echo ""
+echo "Response: $result";
+if [[ $result =~ userFriendlyErrors ]]
+  then {
+    TESTFAILED=$[TESTFAILED + 1]
+    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept updateroles"
   }
 fi 
 
