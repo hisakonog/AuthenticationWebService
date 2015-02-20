@@ -53,5 +53,6 @@ module.exports = function(grunt) {
   // Default task.
   grunt.registerTask('default', ['jshint', 'nodeunit', 'exec:curl_tests']);
   grunt.registerTask('test', ['nodeunit', 'exec:curl_tests']);
+  grunt.registerTask('travis', ['nodeunit']);
 
 };
