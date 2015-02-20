@@ -23,12 +23,12 @@
     "Fieldlinguist <info@fieldlinguist.com>"
   ],
   "dependencies": {
-    "bcrypt": "0.7.6",
+    "bcrypt": "0.8.1",
     "cors": "*",
-    "cradle": "*",
+    "cradle": "0.6.6",
     "diacritics" : "1.0.0",
     "express": "3.5.2",
-    "MD5": "*",
+    "MD5": "1.1.0",
     "nano": "4.1.1",
     "nodemailer": "0.5.2",
     "underscore": "1.5.1",

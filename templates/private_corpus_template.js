@@ -64,24 +64,6 @@ module.exports = {
     "showToUserTypes": "linguist",
     "userchooseable": "disabled"
   }, {
-    "label": "syntacticCategory",
-    "value": "",
-    "mask": "",
-    "encrypted": "",
-    "shouldBeEncrypted": "checked",
-    "help": "This optional field is used by the machine to help with search and data cleaning, in combination with morphemes and gloss (above). If you want to use it, you can choose to use any sort of syntactic category tagging you wish. It could be very theoretical like Distributed Morphology (Sample entry: √-GEN-NUM), or very a-theroretical like the Penn Tree Bank Tag Set. (Sample entry: NNS) http://www.ims.uni-stuttgart.de/projekte/CorpusWorkbench/CQP-HTMLDemo/PennTreebankTS.html",
-    "showToUserTypes": "linguist",
-    "userchooseable": "disabled"
-  }, {
-    "label": "syntacticTreeLatex",
-    "value": "",
-    "mask": "",
-    "encrypted": "",
-    "shouldBeEncrypted": "checked",
-    "help": "This optional field is used by the machine to make LaTeX trees and help with search and data cleaning, in combination with morphemes and gloss (above). If you want to use it, you can choose to use any sort of LaTeX Tree package (we use QTree by default) Sample entry: Tree [.S NP VP ]",
-    "showToUserTypes": "linguist",
-    "userchooseable": "disabled"
-  }, {
     "label": "translation",
     "value": "",
     "mask": "",
@@ -100,6 +82,24 @@ module.exports = {
     "showToUserTypes": "all",
     "userchooseable": "disabled"
   }, {
+    "label": "syntacticCategory",
+    "value": "",
+    "mask": "",
+    "encrypted": "",
+    "shouldBeEncrypted": "checked",
+    "help": "This optional field is used by the machine to help with search and data cleaning, in combination with morphemes and gloss (above). If you want to use it, you can choose to use any sort of syntactic category tagging you wish. It could be very theoretical like Distributed Morphology (Sample entry: √-GEN-NUM), or very a-theroretical like the Penn Tree Bank Tag Set. (Sample entry: NNS) http://www.ims.uni-stuttgart.de/projekte/CorpusWorkbench/CQP-HTMLDemo/PennTreebankTS.html",
+    "showToUserTypes": "linguist",
+    "userchooseable": "disabled"
+  }, {
+    "label": "syntacticTreeLatex",
+    "value": "",
+    "mask": "",
+    "encrypted": "",
+    "shouldBeEncrypted": "checked",
+    "help": "This optional field is used by the machine to make LaTeX trees and help with search and data cleaning, in combination with morphemes and gloss (above). If you want to use it, you can choose to use any sort of LaTeX Tree package (we use QTree by default) Sample entry: Tree [.S NP VP ]",
+    "showToUserTypes": "linguist",
+    "userchooseable": "disabled"
+  },  {
     "label": "validationStatus",
     "value": "",
     "mask": "",

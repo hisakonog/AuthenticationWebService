@@ -10,7 +10,7 @@ var ExpressWebServer = require('express');
 
 /* Load modules provided by this codebase */
 var AuthWebServiceRoutes = require('./routes/routes');
-
+var deprecatedRoutes = require('./routes/deprecated');
 /** 
  * You can control aspects of the deployment by using Environment Variables
  *
@@ -65,6 +65,11 @@ AuthWebService.configure('production', function() {
  * Set up all the available URL AuthWebServiceRoutes see routes/routes.js for more details
  */
 AuthWebServiceRoutes.setup(AuthWebService, apiVersion);
+
+/**
+ * Set up all the old routes until all client apps have migrated to the v2+ api
+ */
+deprecatedRoutes.addDeprecatedRoutes(AuthWebService, config);
 
 /**
  * Read in the specified filenames for this config's security key and certificates,
