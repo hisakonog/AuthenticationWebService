@@ -23,6 +23,5 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 * v0.32  switched to couchdb 
 * v0.62  gravatars
 
-
 ## License
 Licensed under the Apache, 2.0 licenses.
