@@ -72,7 +72,7 @@ echo ""
 echo "Response: $result";
 if [[ $result =~ userFriendlyErrors ]]
   then {
-    echo " server refused."
+    echo " server refused, thats good."
   } else {
     TESTFAILED=$[TESTFAILED + 1]
     TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should refuse to register existing names"
@@ -90,7 +90,7 @@ echo ""
 echo "Response: $result";
 if [[ $result =~ userFriendlyErrors ]]
   then {
-    echo " server refused."
+    echo " server refused, thats good."
   } else {
     TESTFAILED=$[TESTFAILED + 1]
     TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should refuse to register short usernames"
@@ -124,7 +124,7 @@ echo ""
 echo "Response: $result";
 if [[ $result =~ userFriendlyErrors ]]
   then {
-    echo " server refused."
+    echo " server refused, thats good."
   } else {
     TESTFAILED=$[TESTFAILED + 1]
     TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should refuse to changepassword if the new password is missing"
@@ -142,28 +142,110 @@ echo ""
 echo "Response: $result";
 if [[ $result =~ userFriendlyErrors ]]
   then {
-    echo " server refused."
+    echo " server refused, thats good."
   } else {
     TESTFAILED=$[TESTFAILED + 1]
     TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should refuse to changepassword if the confirm password doesnt match"
   }
 fi 
 
-
-
 echo ""
-echo "It should accept corpusteam"
+echo "It should refuse to tell a corpusteam details if the username is not a valid user "
+echo ""
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
 -H "Content-Type: application/json" \
--d '{"username": "jenkins", "password": "phoneme"}' \
+-d '{"username": "testingspreadsheet",  "couchConnection": {"pouchname": "jenkins-firstcorpus"} }' \
 $SERVER/corpusteam `"
 echo ""
 echo "Response: $result";
 if [[ $result =~ userFriendlyErrors ]]
   then {
+    echo "server refused, this is good."
+  } else {
     TESTFAILED=$[TESTFAILED + 1]
-    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept corpusteam"
+    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept corpusteam from the spreadsheet app"
+  }
+fi 
+
+echo ""
+echo "It should refuse to tell a corpusteam details if the username is not a valid user and on that team. eg: "
+echo ""
+TESTCOUNT=$[TESTCOUNT + 1]
+result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{"username": "testingspreadsheet", "password": "test", "couchConnection": {"pouchname": "jenkins-firstcorpus"} }' \
+$SERVER/corpusteam `"
+echo ""
+echo "Response: $result";
+if [[ $result =~ userFriendlyErrors ]]
+  then {
+    echo "server refused, this is good."
+  } else {
+    TESTFAILED=$[TESTFAILED + 1]
+    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept corpusteam from the spreadsheet app"
+  }
+fi 
+
+echo ""
+echo "It should accept corpusteam from the backbone app. eg: "
+echo '  //Send username to limit the requests so only valid users can get a user list'
+echo '  dataToPost.username = this.get("userPrivate").get("username");'
+echo '  dataToPost.couchConnection = window.app.get("corpus").get("couchConnection");'
+echo ""
+TESTCOUNT=$[TESTCOUNT + 1]
+result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{"username": "jenkins", "password": "phoneme", "couchConnection": {"pouchname": "jenkins-firstcorpus"} }' \
+$SERVER/corpusteam `"
+echo ""
+if [[ $result =~ userFriendlyErrors ]]
+  then {
+    echo "Response: $result";
+    TESTFAILED=$[TESTFAILED + 1]
+    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept corpusteam from the spreadsheet app"
+  } else {
+    if [[ $result =~ readers ]]
+      then {
+        echo "Response: $result" | grep -C 4 readers;
+        echo " server replied with team details to a prototype-like request."
+      } else {
+        TESTFAILED=$[TESTFAILED + 1]
+        TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should reply with corpus team details"
+      }
+    fi 
+  }
+fi 
+
+echo ""
+echo "It should accept corpusteam requests from the spreadsheet app. eg: "
+echo ' dataToPost.username = $rootScope.loginInfo.username;'
+echo ' dataToPost.password = $rootScope.loginInfo.password;'
+echo ' dataToPost.serverCode = $rootScope.serverCode;'
+echo ' dataToPost.authUrl = Servers.getServiceUrl($rootScope.serverCode, "auth");'
+echo ' dataToPost.pouchname = $rootScope.corpus.pouchname;'
+echo ""
+TESTCOUNT=$[TESTCOUNT + 1]
+result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{"username": "jenkins", "password": "phoneme", "serverCode": "localhost", "pouchname": "jenkins-firstcorpus"}' \
+$SERVER/corpusteam `"
+echo ""
+if [[ $result =~ userFriendlyErrors ]]
+  then {
+    echo "Response: $result";
+    TESTFAILED=$[TESTFAILED + 1]
+    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept corpusteam from the spreadsheet app"
+  } else {
+    if [[ $result =~ readers ]]
+      then {
+        echo "Response: $result" | grep -C 4 readers;
+        echo " server replied with team details a spreadsheet-like request"
+      } else {
+        TESTFAILED=$[TESTFAILED + 1]
+        TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should reply with corpus team details"
+      }
+    fi 
   }
 fi 
 

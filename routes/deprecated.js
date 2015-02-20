@@ -219,31 +219,42 @@ var addDeprecatedRoutes = function(app, node_config) {
   app.post('/corpusteam', function(req, res, next) {
 
     var returndata = {};
-    authenticationfunctions.fetchCorpusPermissions(req, function(err, users, info) {
+    authenticationfunctions.authenticateUser(req.body.username, req.body.password, req, function(err, user, info) {
+      var returndata = {};
       if (err) {
         res.status(err.status || 400);
         returndata.status = err.status || 400;
-        console.log(new Date() + " There was an error in the authenticationfunctions.fetchCorpusPermissions:\n" + util.inspect(err));
+        console.log(new Date() + " There was an error in the authenticationfunctions.authenticateUser:\n" + util.inspect(err));
         returndata.userFriendlyErrors = "Please supply a username and password to ensure this is you.";
+        res.send(returndata);
+        return;
       }
-      if (!users) {
-        returndata.userFriendlyErrors = [info.message];
-      } else {
-        returndata.users = users;
-        returndata.info = [info.message];
-        // returndata.userFriendlyErrors = ["Faking an error to test"];
-      }
-      //console.log(new Date() + " Returning response:\n" + util.inspect(returndata));
-      console.log(new Date() + " Returning the list of reader users on this corpus as json:");
-      if (returndata && returndata.users) {
-        console.log(util.inspect(returndata.users.readers));
-      }
-      var cors_headers = build_headers_from_request(req);
-      for (var key in cors_headers) {
-        value = cors_headers[key];
-        res.setHeader(key, value);
-      }
-      res.send(returndata);
+      authenticationfunctions.fetchCorpusPermissions(req, function(err, users, info) {
+        if (err) {
+          res.status(err.status || 400);
+          returndata.status = err.status || 400;
+          console.log(new Date() + " There was an error in the authenticationfunctions.fetchCorpusPermissions:\n" + util.inspect(err));
+          returndata.userFriendlyErrors = "Please supply a username and password to ensure this is you.";
+        }
+        if (!users) {
+          returndata.userFriendlyErrors = [info.message];
+        } else {
+          returndata.users = users;
+          returndata.info = [info.message];
+          // returndata.userFriendlyErrors = ["Faking an error to test"];
+        }
+        //console.log(new Date() + " Returning response:\n" + util.inspect(returndata));
+        console.log(new Date() + " Returning the list of reader users on this corpus as json:");
+        if (returndata && returndata.users) {
+          console.log(util.inspect(returndata.users.readers));
+        }
+        var cors_headers = build_headers_from_request(req);
+        for (var key in cors_headers) {
+          value = cors_headers[key];
+          res.setHeader(key, value);
+        }
+        res.send(returndata);
+      });
     });
 
   });
