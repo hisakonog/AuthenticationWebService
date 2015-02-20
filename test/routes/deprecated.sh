@@ -62,6 +62,66 @@ if [[ $result =~ "\"lastname\": \"\"" ]]
 fi 
 
 echo ""
+echo "It should count down the password reset"
+TESTCOUNT=$[TESTCOUNT + 1]
+result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{"username": "jenkins", "password": "opps"}' \
+$SERVER/login `"
+result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{"username": "jenkins", "password": "wrongpassword"}' \
+$SERVER/login `"
+result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{"username": "jenkins", "password": "again"}' \
+$SERVER/login `"
+echo ""
+if [[ $result =~ "You have 2 more attempts"  ]]
+  then {
+    echo "Response: $result";
+  } else {
+   TESTFAILED=$[TESTFAILED + 1]
+   TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should count down the password reset"
+ }
+fi
+
+
+echo ""
+echo "It should count down the password reset"
+TESTCOUNT=$[TESTCOUNT + 1]
+result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{"username": "jenkins", "password": "trying"}' \
+$SERVER/login `"
+echo ""
+if [[ $result =~ "You have 1 more attempts"  ]]
+  then {
+    echo "Response: $result";
+  } else {
+   TESTFAILED=$[TESTFAILED + 1]
+   TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should count down the password reset"
+ }
+fi
+
+echo ""
+echo "It should count down the password reset"
+TESTCOUNT=$[TESTCOUNT + 1]
+result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{"username": "jenkins", "password": "wrongpassword"}' \
+$SERVER/login `"
+echo ""
+if [[ $result =~ "You have tried to log in"  ]]
+  then {
+    echo "Response: $result";
+  } else {
+   TESTFAILED=$[TESTFAILED + 1]
+   TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should count down the password reset"
+ }
+fi
+
+echo ""
 echo "It should refuse to register existing names"
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
@@ -105,9 +165,9 @@ result="`curl -kX POST \
 -d '{"username": "jenkins", "password": "phoneme", "newpassword": "phoneme", "confirmpassword": "phoneme"}' \
 $SERVER/changepassword `"
 echo ""
-echo "Response: $result";
 if [[ $result =~ userFriendlyErrors ]]
   then {
+    echo "Response: $result";
     TESTFAILED=$[TESTFAILED + 1]
     TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept changepassword"
   }
