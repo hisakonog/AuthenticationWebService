@@ -267,6 +267,8 @@ var addDeprecatedRoutes = function(app, node_config) {
         returndata.status = err.status || 400;
         console.log(new Date() + " There was an error in the authenticationfunctions.authenticateUser:\n" + util.inspect(err));
         returndata.userFriendlyErrors = "Please supply a username and password to ensure this is you.";
+        res.send(returndata);
+        return;
       }
       if (!user) {
         returndata.userFriendlyErrors = [info.message];
@@ -395,6 +397,8 @@ var addDeprecatedRoutes = function(app, node_config) {
         returndata.status = err.status || 400;
         console.log(new Date() + " There was an error in the authenticationfunctions.authenticateUser:\n" + util.inspect(err));
         returndata.userFriendlyErrors = "Please supply a username and password to ensure this is you.";
+        res.send(returndata);
+        return;
       }
 
       if (!user) {
