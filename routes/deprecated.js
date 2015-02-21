@@ -213,6 +213,57 @@ var addDeprecatedRoutes = function(app, node_config) {
   });
 
   /**
+   * Takes in the http request and response. Calls the setPassword function in
+   * the authenticationfunctions library. The setPassword function takes in an old password,
+   * new password and a username, and a function to call
+   * after setPassword has completed. In this case the done function is expected to
+   * be called with an err (null if no error), user (null if no user), and an info
+   * object containing a message which can be show to the calling application
+   * which sent the post request.
+   *
+   * If there is an error, the info is added to the 'errors' attribute of the
+   * returned json.
+   *
+   * If there is a user, the user is added to the 'user' attribute of the returned
+   * json. If there is no user, the info is again added to the 'errors' attribute
+   * of the returned json.
+   *
+   * Finally the returndata json is sent to the calling application via the
+   * response.
+   */
+  app.post('/forgotpassword', function(req, res) {
+    var email = req.body.email;
+    authenticationfunctions.forgotPassword(email, function(err, forgotPasswordResults, info) {
+      var returndata = {};
+      if (err) {
+        res.status(err.status || 400);
+        returndata.status = err.status || 400;
+        console.log(new Date() + " There was an error in the authenticationfunctions.setPassword " + util.inspect(err));
+        returndata.userFriendlyErrors = [info.message];
+      } else {
+        returndata.info = [info.message];
+        // res.status(200);
+        console.log(new Date() + " Returning forgotpassword success: " + util.inspect(returndata));
+      }
+      var cors_headers = build_headers_from_request(req);
+      for (var key in cors_headers) {
+        value = cors_headers[key];
+        res.setHeader(key, value);
+      }
+      res.send(returndata);
+
+    });
+  });
+  app.get('/forgotpassword', function(req, res, next) {
+    var cors_headers = build_headers_from_request(req);
+    for (var key in cors_headers) {
+      value = cors_headers[key];
+      res.setHeader(key, value);
+    }
+    res.send({});
+  });
+
+  /**
    * Responds to requests for a list of team members on a corpus, if successful replies with a list of
    * usernames as json
    */

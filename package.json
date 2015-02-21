@@ -32,6 +32,7 @@
     "grunt-exec": "^0.4.6",
     "nano": "4.1.1",
     "nodemailer": "0.5.2",
+    "q": "^1.1.2",
     "swagger-node-express": "git://github.com/cesine/swagger-node-express#search",
     "underscore": "1.5.1",
     "uuid": "1.4.1"
