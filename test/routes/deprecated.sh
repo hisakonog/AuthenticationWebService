@@ -24,7 +24,7 @@ TESTCOUNT=0;
 TESTFAILED=0;
 TESTSFAILEDSTRING="";
 TESTPASSED=0;
-TESTCOUNTEXPECTED=18;
+TESTCOUNTEXPECTED=21;
 
 # Production server is using http behind nginx
 SERVER="https://localhost:3183";
@@ -231,12 +231,12 @@ fi
 echo ""
 echo "It should accept forgotpassword"
 TESTCOUNT=$[TESTCOUNT + 1]
-# result="`curl -kX POST \
-# -H "Content-Type: application/json" \
-# -d '{"username": "testinguserwithemail", "password": "opps"}' \
-# $SERVER/login `"
-# echo ""
-# echo "Response: $result";
+result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{"username": "testinguserwithemail", "password": "opps"}' \
+$SERVER/login `"
+echo ""
+echo "Response: $result";
 result="`curl -kX POST \
 -H "Content-Type: application/json" \
 -d '{"email": "myemail@example.com"}' \
@@ -461,7 +461,7 @@ if [[ $result =~ userFriendlyErrors ]]
 fi 
 
 echo ""
-echo "It should accept updateroles from the spreadsheet app eg"
+echo "It should accept deprecated updateroles and run addroletouser (from the spreadsheet app eg)"
 echo 'file://angular_client/modules/spreadsheet/app/scripts/controllers/SpreadsheetController.js '
 echo '      dataToPost.userRoleInfo = {};'
 echo '      dataToPost.userRoleInfo.usernameToModify = userid;'
@@ -537,7 +537,7 @@ echo "Response: $result";
 if [[ $result =~ userFriendlyErrors ]]
   then {
     TESTFAILED=$[TESTFAILED + 1]
-    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept updateroles"
+    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept deprecated updateroles and run addroletouser"
   }
 fi 
 
