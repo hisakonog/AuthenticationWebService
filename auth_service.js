@@ -24,12 +24,31 @@ var deploy_target = process.env.NODE_DEPLOY_TARGET || "local";
 var config = require('./lib/nodeconfig_' + deploy_target);
 var apiVersion = "v" + parseInt(require("./package.json").version, 10);
 console.log("Accepting api version " + apiVersion);
+
+var corsOptions = {
+  credentials: true,
+  maxAge: 86400,
+  methods: 'HEAD, POST, GET, PUT, PATCH, DELETE',
+  allowedHeaders: 'Access-Control-Allow-Origin, access-control-request-headers, accept, accept-charset, accept-encoding, accept-language, authorization, content-length, content-type, host, origin, proxy-connection, referer, user-agent, x-requested-with',
+  origin: function(origin, callback) {
+    var originIsWhitelisted = false;
+    if ( /* permit curl */ origin === undefined || /* permit android */ origin === "null" || origin === null || !origin) {
+      originIsWhitelisted = true;
+    } else if (origin.search(/^https?:\/\/.*\.lingsync.org$/) > -1 || origin.search(/^https?:\/\/.*\.phophlo.ca$/) > -1 || origin.search(/^https?:\/\/localhost:[0-9]*$/) > -1 || origin.search(/^chrome-extension:\/\/[^\/]*$/) > -1) {
+      originIsWhitelisted = true;
+    }
+    console.log(new Date() + " Responding with CORS options for " + origin + " accept as whitelisted is: " + originIsWhitelisted);
+    callback(null, originIsWhitelisted);
+  }
+};
+
 /**
  * Use Express to create the AuthWebService see http://expressjs.com/ for more details
  */
 var AuthWebService = ExpressWebServer();
 AuthWebService.configure(function() {
 
+  AuthWebService.use(CrossOriginResourceSharing(corsOptions));
   // Accept versions 
   AuthWebService.use(function(req, res, next) {
     if (req.url.indexOf("/" + apiVersion) === 0) {
@@ -41,7 +60,6 @@ AuthWebService.configure(function() {
   AuthWebService.use(ExpressWebServer.cookieParser());
   AuthWebService.use(ExpressWebServer.bodyParser());
   AuthWebService.use(ExpressWebServer.methodOverride());
-  AuthWebService.use(CrossOriginResourceSharing());
   AuthWebService.use(AuthWebService.router);
   /*
    * Although this is mostly a webservice used by machines (not a websserver used by humans)
@@ -59,6 +77,13 @@ AuthWebService.configure('development', function() {
 
 AuthWebService.configure('production', function() {
   AuthWebService.use(ExpressWebServer.errorHandler());
+});
+
+AuthWebService.options('*', function(req, res, next) {
+  if (req.method === 'OPTIONS') {
+    console.log('responding to OPTIONS request');
+    res.send(204);
+  }
 });
 
 /**

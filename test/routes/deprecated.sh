@@ -24,7 +24,7 @@ TESTCOUNT=0;
 TESTFAILED=0;
 TESTSFAILEDSTRING="";
 TESTPASSED=0;
-TESTCOUNTEXPECTED=18;
+TESTCOUNTEXPECTED=21;
 
 # Production server is using http behind nginx
 SERVER="https://localhost:3183";
@@ -206,6 +206,65 @@ if [[ $result =~ userFriendlyErrors ]]
   } else {
     TESTFAILED=$[TESTFAILED + 1]
     TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should refuse to changepassword if the confirm password doesnt match"
+  }
+fi 
+
+echo ""
+echo "It should refuse forgotpassword if the user hasnt tried to login (ie doesnt know thier username)"
+TESTCOUNT=$[TESTCOUNT + 1]
+result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{"email": "myemail@example.com"}' \
+$SERVER/forgotpassword `"
+echo ""
+echo "Response: $result";
+if [[ $result =~ userFriendlyErrors ]]
+  then {  
+  echo "server refused, this is good."
+} else {
+  TESTFAILED=$[TESTFAILED + 1]
+  TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should refuse forgotpassword if the user hasnt tried to login (ie doesnt know thier username)"
+}
+fi 
+
+
+echo ""
+echo "It should accept forgotpassword"
+TESTCOUNT=$[TESTCOUNT + 1]
+result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{"username": "testinguserwithemail", "password": "opps"}' \
+$SERVER/login `"
+echo ""
+echo "Response: $result";
+result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{"email": "myemail@example.com"}' \
+$SERVER/forgotpassword `"
+echo ""
+echo "Response: $result";
+if [[ $result =~ userFriendlyErrors ]]
+  then {
+    TESTFAILED=$[TESTFAILED + 1]
+    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept forgotpassword"
+  }
+fi 
+
+echo ""
+echo "It should refuse to send a password reset if neither email nor username was provided"
+TESTCOUNT=$[TESTCOUNT + 1]
+result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{}' \
+$SERVER/forgotpassword `"
+echo ""
+echo "Response: $result";
+if [[ $result =~ userFriendlyErrors ]]
+  then {
+    echo " server refused, thats good."
+  } else {
+    TESTFAILED=$[TESTFAILED + 1]
+    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should refuse to send a password reset if neither email nor username was provided"
   }
 fi 
 
@@ -402,61 +461,61 @@ if [[ $result =~ userFriendlyErrors ]]
 fi 
 
 echo ""
-echo "It should accept updateroles from the spreadsheet app eg"
+echo "It should accept deprecated updateroles and run addroletouser (from the spreadsheet app eg)"
 echo 'file://angular_client/modules/spreadsheet/app/scripts/controllers/SpreadsheetController.js '
 echo '      dataToPost.userRoleInfo = {};'
 echo '      dataToPost.userRoleInfo.usernameToModify = userid;'
 echo '      dataToPost.userRoleInfo.pouchname = $rootScope.corpus.pouchname;'
 echo '      //dataToPost.userRoleInfo.removeUser = true;'
 echo '      switch (newUserRoles.role) {'
-echo '      /*'
-echo '            NOTE THESE ROLES are not accurate reflections of the db roles,'
-echo '            they are a simplification which assumes the'
-echo '            admin -> writer -> commenter -> reader type of system.'
-echo ''
-echo '            Infact some users (technical support or project coordinators) might be only admin,'
-echo '            and some experiment participants might be only writers and'
-echo '            cant see each others data.'
-echo ''
-echo '            Probably the clients wanted the spreadsheet roles to appear implicative since its more common.'
-echo '            see https://github.com/OpenSourceFieldlinguistics/FieldDB/issues/1113'
-echo '          */'
-echo '      case "admin":'
-echo '        newUserRoles.admin = true;'
-echo '        newUserRoles.reader = true;'
-echo '        newUserRoles.commenter = true;'
-echo '        newUserRoles.writer = true;'
-echo '        rolesString += " Admin";'
-echo '        break;'
-echo '      case "read_write":'
-echo '        newUserRoles.admin = false;'
-echo '        newUserRoles.reader = true;'
-echo '        newUserRoles.commenter = true;'
-echo '        newUserRoles.writer = true;'
-echo '        rolesString += " Writer Reader";'
-echo '        break;'
-echo '      case "read_only":'
-echo '        newUserRoles.admin = false;'
-echo '        newUserRoles.reader = true;'
-echo '        newUserRoles.commenter = false;'
-echo '        newUserRoles.writer = false;'
-echo '        rolesString += " Reader";'
-echo '        break;'
-echo '      case "read_comment_only":'
-echo '        newUserRoles.admin = false;'
-echo '        newUserRoles.reader = true;'
-echo '        newUserRoles.commenter = true;'
-echo '        newUserRoles.writer = false;'
-echo '        rolesString += " Reader Commenter";'
-echo '        break;'
-echo '      case "write_only":'
+# echo '      /*'
+# echo '            NOTE THESE ROLES are not accurate reflections of the db roles,'
+# echo '            they are a simplification which assumes the'
+# echo '            admin -> writer -> commenter -> reader type of system.'
+# echo ''
+# echo '            Infact some users (technical support or project coordinators) might be only admin,'
+# echo '            and some experiment participants might be only writers and'
+# echo '            cant see each others data.'
+# echo ''
+# echo '            Probably the clients wanted the spreadsheet roles to appear implicative since its more common.'
+# echo '            see https://github.com/OpenSourceFieldlinguistics/FieldDB/issues/1113'
+# echo '          */'
+# echo '      case "admin":'
+# echo '        newUserRoles.admin = true;'
+# echo '        newUserRoles.reader = true;'
+# echo '        newUserRoles.commenter = true;'
+# echo '        newUserRoles.writer = true;'
+# echo '        rolesString += " Admin";'
+# echo '        break;'
+# echo '      case "read_write":'
+# echo '        newUserRoles.admin = false;'
+# echo '        newUserRoles.reader = true;'
+# echo '        newUserRoles.commenter = true;'
+# echo '        newUserRoles.writer = true;'
+# echo '        rolesString += " Writer Reader";'
+# echo '        break;'
+# echo '      case "read_only":'
+# echo '        newUserRoles.admin = false;'
+# echo '        newUserRoles.reader = true;'
+# echo '        newUserRoles.commenter = false;'
+# echo '        newUserRoles.writer = false;'
+# echo '        rolesString += " Reader";'
+# echo '        break;'
+# echo '      case "read_comment_only":'
+# echo '        newUserRoles.admin = false;'
+# echo '        newUserRoles.reader = true;'
+# echo '        newUserRoles.commenter = true;'
+# echo '        newUserRoles.writer = false;'
+# echo '        rolesString += " Reader Commenter";'
+# echo '        break;'
+# echo '      case "write_only":'
 echo '        newUserRoles.admin = false;'
 echo '        newUserRoles.reader = false;'
 echo '        newUserRoles.commenter = true;'
 echo '        newUserRoles.writer = true;'
 echo '        rolesString += " Writer";'
-echo '        break;'
-echo '    }'
+# echo '        break;'
+# echo '    }'
 echo ''
 echo '    newUserRoles.pouchname = $rootScope.corpus.pouchname;'
 echo ''
@@ -478,7 +537,7 @@ echo "Response: $result";
 if [[ $result =~ userFriendlyErrors ]]
   then {
     TESTFAILED=$[TESTFAILED + 1]
-    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept updateroles"
+    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : It should accept deprecated updateroles and run addroletouser"
   }
 fi 
 
