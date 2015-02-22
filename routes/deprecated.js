@@ -11,46 +11,6 @@ var authenticationfunctions = require('./../lib/userauthentication.js'),
  */
 var addDeprecatedRoutes = function(app, node_config) {
 
-  /*
-   * CORS support
-   * http://stackoverflow.com/questions/7067966/how-to-allow-cors-in-express-nodejs
-   */
-  var build_headers_from_request = function(req) {
-    if (req.headers['access-control-request-headers']) {
-      headers = req.headers['access-control-request-headers'];
-    } else {
-      headers = 'accept, accept-charset, accept-encoding, accept-language, authorization, content-length, content-type, host, origin, proxy-connection, referer, user-agent, x-requested-with';
-      _ref = req.headers;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        header = _ref[_i];
-        if (req.indexOf('x-') === 0) {
-          headers += ', ' + header;
-        }
-      }
-    }
-    headers.host = "authdev.lingsync.org"; //
-    var cors_headers = {
-      'access-control-allow-methods': 'HEAD, POST, GET, PUT, PATCH, DELETE',
-      'access-control-max-age': '86400',
-      'access-control-allow-headers': headers,
-      'access-control-allow-credentials': 'true',
-      'access-control-allow-origin': req.headers.origin || '*'
-    };
-    return cors_headers;
-  };
-
-  app.options('*', function(req, res, next) {
-    if (req.method === 'OPTIONS') {
-      console.log('responding to OPTIONS request');
-      var cors_headers = build_headers_from_request(req);
-      for (var key in cors_headers) {
-        value = cors_headers[key];
-        res.setHeader(key, value);
-      }
-      res.send(200);
-    }
-  });
-
   /**
    * Responds to requests for login, if sucessful replies with the user's details
    * as json
@@ -74,20 +34,10 @@ var addDeprecatedRoutes = function(app, node_config) {
         //console.log(new Date() + " Returning the existing user as json:\n" + util.inspect(user));
       }
       console.log(new Date() + " Returning response:\n" + util.inspect(returndata));
-      var cors_headers = build_headers_from_request(req);
-      for (var key in cors_headers) {
-        value = cors_headers[key];
-        res.setHeader(key, value);
-      }
       res.send(returndata);
     });
   });
   app.get('/login', function(req, res, next) {
-    var cors_headers = build_headers_from_request(req);
-    for (var key in cors_headers) {
-      value = cors_headers[key];
-      res.setHeader(key, value);
-    }
     res.send(); // {info: "Service is running normally."});
   });
 
@@ -127,21 +77,11 @@ var addDeprecatedRoutes = function(app, node_config) {
         returndata.info = [info.message];
         console.log(new Date() + " Returning the newly built user: " + util.inspect(user));
       }
-      var cors_headers = build_headers_from_request(req);
-      for (var key in cors_headers) {
-        value = cors_headers[key];
-        res.setHeader(key, value);
-      }
       res.send(returndata);
 
     });
   });
   app.get('/register', function(req, res, next) {
-    var cors_headers = build_headers_from_request(req);
-    for (var key in cors_headers) {
-      value = cors_headers[key];
-      res.setHeader(key, value);
-    }
     res.send({});
   });
 
@@ -194,21 +134,11 @@ var addDeprecatedRoutes = function(app, node_config) {
         res.status(200);
         console.log(new Date() + " Returning success: " + util.inspect(user));
       }
-      var cors_headers = build_headers_from_request(req);
-      for (var key in cors_headers) {
-        value = cors_headers[key];
-        res.setHeader(key, value);
-      }
       res.send(returndata);
 
     });
   });
   app.get('/changepassword', function(req, res, next) {
-    var cors_headers = build_headers_from_request(req);
-    for (var key in cors_headers) {
-      value = cors_headers[key];
-      res.setHeader(key, value);
-    }
     res.send({});
   });
 
@@ -245,21 +175,11 @@ var addDeprecatedRoutes = function(app, node_config) {
         // res.status(200);
         console.log(new Date() + " Returning forgotpassword success: " + util.inspect(returndata));
       }
-      var cors_headers = build_headers_from_request(req);
-      for (var key in cors_headers) {
-        value = cors_headers[key];
-        res.setHeader(key, value);
-      }
       res.send(returndata);
 
     });
   });
   app.get('/forgotpassword', function(req, res, next) {
-    var cors_headers = build_headers_from_request(req);
-    for (var key in cors_headers) {
-      value = cors_headers[key];
-      res.setHeader(key, value);
-    }
     res.send({});
   });
 
@@ -268,10 +188,35 @@ var addDeprecatedRoutes = function(app, node_config) {
    * usernames as json
    */
   app.post('/corpusteam', function(req, res, next) {
+    var returndata = {};
+    authenticationfunctions.fetchCorpusPermissions(req, function(err, users, info) {
+      if (err) {
+        res.status(err.status || 400);
+        returndata.status = err.status || 400;
+        console.log(new Date() + " There was an error in the authenticationfunctions.fetchCorpusPermissions:\n" + util.inspect(err));
+        returndata.userFriendlyErrors = "Please supply a username and password to ensure this is you.";
+      }
+      if (!users) {
+        returndata.userFriendlyErrors = [info.message];
+      } else {
+        returndata.users = users;
+        returndata.info = [info.message];
+        // returndata.userFriendlyErrors = ["Faking an error to test"];
+      }
+      //console.log(new Date() + " Returning response:\n" + util.inspect(returndata));
+      console.log(new Date() + " Returning the list of reader users on this corpus as json:");
+      if (returndata && returndata.users) {
+        console.log(util.inspect(returndata.users.readers));
+      }
+      res.send(returndata);
+    });
+
+  });
+
+  app.post('/corpusteamwhichrequiresvalidauthentication', function(req, res, next) {
 
     var returndata = {};
     authenticationfunctions.authenticateUser(req.body.username, req.body.password, req, function(err, user, info) {
-      var returndata = {};
       if (err) {
         res.status(err.status || 400);
         returndata.status = err.status || 400;
@@ -299,22 +244,12 @@ var addDeprecatedRoutes = function(app, node_config) {
         if (returndata && returndata.users) {
           console.log(util.inspect(returndata.users.readers));
         }
-        var cors_headers = build_headers_from_request(req);
-        for (var key in cors_headers) {
-          value = cors_headers[key];
-          res.setHeader(key, value);
-        }
         res.send(returndata);
       });
     });
 
   });
   app.get('/corpusteam', function(req, res, next) {
-    var cors_headers = build_headers_from_request(req);
-    for (var key in cors_headers) {
-      value = cors_headers[key];
-      res.setHeader(key, value);
-    }
     res.send({});
   });
 
@@ -355,11 +290,6 @@ var addDeprecatedRoutes = function(app, node_config) {
             console.log(new Date() + " Returning role added okay:\n");
           }
           console.log(new Date() + " Returning response:\n" + util.inspect(returndata));
-          var cors_headers = build_headers_from_request(req);
-          for (var key in cors_headers) {
-            value = cors_headers[key];
-            res.setHeader(key, value);
-          }
           res.send(returndata);
         });
 
@@ -367,11 +297,6 @@ var addDeprecatedRoutes = function(app, node_config) {
     });
   });
   app.get('/addroletouser', function(req, res, next) {
-    var cors_headers = build_headers_from_request(req);
-    for (var key in cors_headers) {
-      value = cors_headers[key];
-      res.setHeader(key, value);
-    }
     res.send({});
   });
 
@@ -386,21 +311,11 @@ var addDeprecatedRoutes = function(app, node_config) {
         returndata.status = err.status || 400;
         console.log(new Date() + " There was an error in the authenticationfunctions.authenticateUser:\n" + util.inspect(err));
         returndata.userFriendlyErrors = "Please supply a username and password to ensure this is you.";
-        var cors_headers = build_headers_from_request(req);
-        for (var key in cors_headers) {
-          value = cors_headers[key];
-          res.setHeader(key, value);
-        }
         res.send(returndata);
         return;
       }
       if (!user) {
         returndata.userFriendlyErrors = [info.message];
-        var cors_headers = build_headers_from_request(req);
-        for (var key in cors_headers) {
-          value = cors_headers[key];
-          res.setHeader(key, value);
-        }
         res.send(returndata);
         return;
       } else {
@@ -409,11 +324,6 @@ var addDeprecatedRoutes = function(app, node_config) {
           res.status(412);
           returndata.status = 412;
           returndata.userFriendlyErrors = ["This app has made an invalid request. Please notify its developer. missing: newCorpusName"];
-          var cors_headers = build_headers_from_request(req);
-          for (var key in cors_headers) {
-            value = cors_headers[key];
-            res.setHeader(key, value);
-          }
           res.send(returndata);
           return;
         }
@@ -441,11 +351,6 @@ var addDeprecatedRoutes = function(app, node_config) {
             console.log(new Date() + " Returning corpus added okay:\n");
           }
           console.log(new Date() + " Returning response:\n" + util.inspect(returndata));
-          var cors_headers = build_headers_from_request(req);
-          for (var key in cors_headers) {
-            value = cors_headers[key];
-            res.setHeader(key, value);
-          }
           res.send(returndata);
         });
       }
@@ -493,11 +398,6 @@ var addDeprecatedRoutes = function(app, node_config) {
             console.log(new Date() + " Returning corpus role added okay:\n");
           }
           console.log(new Date() + " Returning response:\n" + util.inspect(returndata));
-          var cors_headers = build_headers_from_request(req);
-          for (var key in cors_headers) {
-            value = cors_headers[key];
-            res.setHeader(key, value);
-          }
           res.send(returndata);
         });
       }
@@ -505,11 +405,6 @@ var addDeprecatedRoutes = function(app, node_config) {
   });
 
   // app.get('/', function(req, res, next) {
-  //  var cors_headers = build_headers_from_request(req);
-  //  for (var key in cors_headers) {
-  //      value = cors_headers[key];
-  //      res.setHeader(key, value);
-  //  }
   //  res.send({
   //      info: "Service is running normally."
   //  });
