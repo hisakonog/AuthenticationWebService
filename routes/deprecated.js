@@ -257,7 +257,7 @@ var addDeprecatedRoutes = function(app, node_config) {
    * Responds to requests for adding a corpus role/permission to a user, if successful replies with the user's details
    * as json
    */
-  app.post('/addroletouser', function(req, res, next) {
+  var addroletouser = function(req, res, next) {
     authenticationfunctions.authenticateUser(req.body.username, req.body.password, req, function(err, user, info) {
       var returndata = {};
       if (err) {
@@ -295,7 +295,9 @@ var addDeprecatedRoutes = function(app, node_config) {
 
       }
     });
-  });
+  };
+
+  app.post('/addroletouser', addroletouser);
   app.get('/addroletouser', function(req, res, next) {
     res.send({});
   });
@@ -362,6 +364,37 @@ var addDeprecatedRoutes = function(app, node_config) {
      TODO return something useful as json
      */
   app.post('/updateroles', function(req, res, next) {
+
+    /* convert spreadhseet data into data which the addroletouser api can read */
+    var userRoleInfo = req.body.userRoleInfo || {};
+    var roles = [];
+
+    if (!req.body.roles && userRoleInfo) {
+      for (var role in userRoleInfo) {
+        if (userRoleInfo.hasOwnProperty(role)) {
+          if (role === "admin" || role === "writer" || role === "reader" || role === "commenter") {
+            roles.push(role);
+          }
+        }
+      }
+    }
+
+    req.body.roles = req.body.roles || roles;
+    console.log(new Date() + " updateroles is DEPRECATED, using the addroletouser route to process this request", roles);
+    req.body.userToAddToRole = req.body.userToAddToRole || req.body.userRoleInfo.usernameToModify;
+    req.body.pouchname = userRoleInfo.pouchname;
+    console.log(new Date() + " requester " + req.body.username + "  userToAddToRole " + req.body.userToAddToRole + " on " + req.body.pouchname);
+
+    /* use the old api not the updateroles api */
+    addroletouser(req, res, next);
+
+  });
+
+  /**
+     * Responds to requests for adding a user in a role to a corpus, if successful replies with corpusadded =true and an info string containgin the roles
+     TODO return something useful as json
+     */
+  app.post('/updaterolesdeprecateddoesnotsupportemailingusers', function(req, res, next) {
     authenticationfunctions.authenticateUser(req.body.username, req.body.password, req, function(err, user, info) {
       var returndata = {
         depcrecated: true
