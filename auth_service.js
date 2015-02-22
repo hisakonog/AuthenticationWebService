@@ -32,7 +32,7 @@ var corsOptions = {
   allowedHeaders: 'Access-Control-Allow-Origin, access-control-request-headers, accept, accept-charset, accept-encoding, accept-language, authorization, content-length, content-type, host, origin, proxy-connection, referer, user-agent, x-requested-with',
   origin: function(origin, callback) {
     var originIsWhitelisted = false;
-    if ( /* permit android */ origin === "null" || origin === null || !origin) {
+    if ( /* permit curl */ origin === undefined || /* permit android */ origin === "null" || origin === null || !origin) {
       originIsWhitelisted = true;
     } else if (origin.search(/^https?:\/\/.*\.lingsync.org$/) > -1 || origin.search(/^https?:\/\/.*\.phophlo.ca$/) > -1 || origin.search(/^https?:\/\/localhost:[0-9]*$/) > -1 || origin.search(/^chrome-extension:\/\/[^\/]*$/) > -1) {
       originIsWhitelisted = true;
