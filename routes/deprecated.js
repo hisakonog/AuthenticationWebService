@@ -9,7 +9,7 @@ var authenticationfunctions = require('./../lib/userauthentication.js'),
  *
  * @param {[type]} app [description]
  */
-var addDeprecatedRoutes = function(app, node_config) {
+var addDeprecatedRoutes = function(app) {
 
   /**
    * Responds to requests for login, if sucessful replies with the user's details
@@ -38,7 +38,9 @@ var addDeprecatedRoutes = function(app, node_config) {
     });
   });
   app.get('/login', function(req, res, next) {
-    res.send({info: "Service is running normally."});
+    res.send({
+      info: "Service is running normally."
+    });
   });
 
   /**
@@ -258,42 +260,105 @@ var addDeprecatedRoutes = function(app, node_config) {
    * as json
    */
   var addroletouser = function(req, res, next) {
+    var returndata = {};
+    if (!req.body.username) {
+      res.status(412);
+      returndata.userFriendlyErrors = ["This app has made an invalid request. Please notify its developer. missing: username of requester"];
+      res.send(returndata);
+      return;
+    }
+
+    if (!req.body.password) {
+      res.status(412);
+      returndata.userFriendlyErrors = ["This app has made an invalid request. Please notify its developer. info: user credentials must be reqested from the user prior to running this request"];
+      res.send(returndata);
+      return;
+    }
+
     authenticationfunctions.authenticateUser(req.body.username, req.body.password, req, function(err, user, info) {
       var returndata = {};
       if (err) {
         res.status(err.status || 400);
         returndata.status = err.status || 400;
         console.log(new Date() + " There was an error in the authenticationfunctions.authenticateUser:\n" + util.inspect(err));
+
         returndata.userFriendlyErrors = [info.message];
         res.send(returndata);
         return;
       }
-      if (!user) {
-        returndata.userFriendlyErrors = [info.message];
-      } else {
 
-        // Add a role to the user
-        authenticationfunctions.addRoleToUser(req, function(err, roles, info) {
-          if (err) {
-            res.status(err.status || 400);
-            returndata.status = err.status || 400;
-            console.log(new Date() + " There was an error in the authenticationfunctions.addRoleToUser:\n" + util.inspect(err));
-            returndata.userFriendlyErrors = [info.message];
-          }
-          if (!roles) {
-            returndata.userFriendlyErrors = [info.message];
-          } else {
-            returndata.roleadded = true;
-            returndata.info = [info.message];
-            // returndata.userFriendlyErrors = ["Faking an error"];
 
-            console.log(new Date() + " Returning role added okay:\n");
-          }
-          console.log(new Date() + " Returning response:\n" + util.inspect(returndata));
-          res.send(returndata);
-        });
-
+      var users = req.body.users;
+      if (!users) {
+        //backward compatability for prototype app
+        if (req.body.userToAddToRole && req.body.roles) {
+          users = [{
+            username: req.body.userToAddToRole,
+            remove: [],
+            add: req.body.roles
+          }];
+        }
+        req.body.users = users;
       }
+
+
+      var defaultConnection = corpus.getCouchConnectionFromServerCode(req.body.serverCode);
+      var couchconnection = req.body.couchConnection;
+      if (!couchconnection) {
+        couchconnection = defaultConnection;
+        if (req.body.pouchname) {
+          couchconnection.pouchname = req.body.pouchname;
+        }
+      }
+      for (var attrib in defaultConnection) {
+        if (defaultConnection.hasOwnProperty(attrib) && !couchconnection[attrib]) {
+          couchconnection[attrib] = defaultConnection[attrib];
+        }
+      }
+      req.body.couchconnection = couchconnection;
+      console.log(req.body.couchconnection)
+      if (!req.body.couchconnection || !req.body.couchconnection.pouchname || req.body.couchconnection.pouchname === "default") {
+        console.log("Client didnt define the corpus to modify.");
+        res.status(412);
+        returndata.userFriendlyErrors = ["This app has made an invalid request. Please notify its developer. info: the corpus to be modified must be included in the request"];
+        res.send(returndata);
+        return;
+      }
+
+      if (!req || !req.body.users || req.body.users.length === 0 || !req.body.users[0].username) {
+        console.log("Client didnt define the user(s) to modify.");
+        res.status(412);
+        returndata.userFriendlyErrors = ["This app has made an invalid request. Please notify its developer. info: user(s) to modify must be included in this request"];
+        res.send(returndata);
+        return;
+      }
+
+      
+      // Add a role to the user
+      var currentlyProcessingUsername = req.body.users[0].username;
+      authenticationfunctions.addRoleToUser(req, function(err, userPermission, info) {
+        if (err) {
+          res.status(err.status || 500);
+          returndata.status = err.status || 500;
+          console.log(new Date() + " There was an error in the authenticationfunctions.addRoleToUser:\n" + util.inspect(err));
+          if (info.message.indexOf("not found") > -1) {
+            info.message = "You can't add " + currentlyProcessingUsername + " to this corpus, their username was unrecognized. " + info.message
+          }
+          returndata.userFriendlyErrors = [info.message];
+
+        } else {
+          returndata.roleadded = true;
+          returndata.userPermission = userPermission;
+          returndata.info = [info.message];
+          // returndata.userFriendlyErrors = ["Faking an error"];
+
+          console.log(new Date() + " Returning role added okay:\n");
+        }
+        console.log(new Date() + " Returning response:\n" + util.inspect(returndata));
+        res.send(returndata);
+      });
+
+
     });
   };
 
