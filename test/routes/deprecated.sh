@@ -39,6 +39,7 @@ fi
 
 echo "-------------------------------------------------------------"
 TESTNAME="It should return user details upon successful login"
+echo "$TESTNAME"
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
 -H "Content-Type: application/json" \
@@ -64,6 +65,7 @@ fi
 
 echo "-------------------------------------------------------------"
 TESTNAME="It should count down the password reset"
+echo "$TESTNAME"
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
 -H "Content-Type: application/json" \
@@ -115,6 +117,7 @@ fi
 
 echo "-------------------------------------------------------------"
 TESTNAME="It should refuse to register existing names"
+echo "$TESTNAME"
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
 -H "Content-Type: application/json" \
@@ -141,6 +144,7 @@ fi
 
 echo "-------------------------------------------------------------"
 TESTNAME="It should refuse to register short usernames"
+echo "$TESTNAME"
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
 -H "Content-Type: application/json" \
@@ -196,6 +200,7 @@ fi
 
 echo "-------------------------------------------------------------"
 TESTNAME="It should refuse to changepassword if the new password is missing"
+echo "$TESTNAME"
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
 -H "Content-Type: application/json" \
@@ -223,6 +228,7 @@ fi
 
 echo "-------------------------------------------------------------"
 TESTNAME="It should refuse to changepassword if the confirm password doesnt match"
+echo "$TESTNAME"
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
 -H "Content-Type: application/json" \
@@ -250,6 +256,7 @@ fi
 
 echo "-------------------------------------------------------------"
 TESTNAME="It should refuse forgotpassword if the user hasnt tried to login (ie doesnt know thier username)"
+echo "$TESTNAME"
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
 -H "Content-Type: application/json" \
@@ -281,6 +288,7 @@ fi
 
 echo "-------------------------------------------------------------"
 TESTNAME="It should accept forgotpassword"
+echo "$TESTNAME"
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
 -H "Content-Type: application/json" \
@@ -314,6 +322,7 @@ fi
 
 echo "-------------------------------------------------------------"
 TESTNAME="It should refuse to send a password reset if neither email nor username was provided"
+echo "$TESTNAME"
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
 -H "Content-Type: application/json" \
@@ -341,6 +350,7 @@ fi
 
 echo "-------------------------------------------------------------"
 TESTNAME="It should refuse to tell a corpusteam details if the username is not a valid user "
+echo "$TESTNAME"
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
 -H "Content-Type: application/json" \
@@ -368,6 +378,7 @@ fi
 
 echo "-------------------------------------------------------------"
 TESTNAME="It should refuse to tell a corpusteam details if the username is a valid user but on that team. eg: "
+echo "$TESTNAME"
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
 -H "Content-Type: application/json" \
@@ -395,6 +406,7 @@ fi
 
 echo "-------------------------------------------------------------"
 TESTNAME="It should reply with corpusteam details from the backbone app. "
+echo "$TESTNAME"
 echo " eg: "
 echo '{'
 echo '  "username": "jenkins",'
@@ -435,6 +447,7 @@ fi
 
 echo "-------------------------------------------------------------"
 TESTNAME="It should accept corpusteam requests from the spreadsheet app. "
+echo "$TESTNAME"
 echo " eg: "
 echo '{'
 echo '  "username": "jenkins",'
@@ -473,6 +486,7 @@ fi
 
 echo "-------------------------------------------------------------"
 TESTNAME="It should refuse to addroletouser if the user doesnt authenticate at the same time"
+echo "$TESTNAME"
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
 -H "Content-Type: application/json" \
@@ -500,6 +514,7 @@ fi
 
 echo "-------------------------------------------------------------"
 TESTNAME="It should refuse to addroletouser if the corpus is missing"
+echo "$TESTNAME"
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
 -H "Content-Type: application/json" \
@@ -527,6 +542,7 @@ fi
 
 echo "-------------------------------------------------------------"
 TESTNAME="It should refuse to addroletouser if the user(s) is missing"
+echo "$TESTNAME"
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
 -H "Content-Type: application/json" \
@@ -559,6 +575,7 @@ fi
 
 echo "-------------------------------------------------------------"
 TESTNAME="It should refuse to addroletouser if the user(s) roles to add or remove are missing"
+echo "$TESTNAME"
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
 -H "Content-Type: application/json" \
@@ -590,6 +607,7 @@ fi
 
 echo "-------------------------------------------------------------"
 TESTNAME="It should be able to remove all roles from user"
+echo "$TESTNAME"
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
 -H "Content-Type: application/json" \
@@ -638,6 +656,7 @@ fi
 
 echo "-------------------------------------------------------------"
 TESTNAME="It should call to addroletouser if the user(s) roles to add or remove are missing"
+echo "$TESTNAME"
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
 -H "Content-Type: application/json" \
@@ -688,6 +707,7 @@ fi
 
 echo "-------------------------------------------------------------"
 TESTNAME="It should refuse to add non-existant users to the corpus"
+echo "$TESTNAME"
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
 -H "Content-Type: application/json" \
@@ -720,9 +740,9 @@ if [[ $result =~ userFriendlyErrors ]]
 fi 
 
 
-
 echo "-------------------------------------------------------------"
-# echo "It should accept roles to add and remove from one or or more users "
+TESTNAME="It should accept roles to add and remove from one or or more users "
+echo "$TESTNAME"
 # echo '{' 
 # echo '  "username": "jenkins",' 
 # echo '  "password": "phoneme",' 
@@ -768,7 +788,8 @@ echo "-------------------------------------------------------------"
 
 
 echo "-------------------------------------------------------------"
-# echo "It should accept addroletouser from the backbone app. eg: "
+TESTNAME="It should accept addroletouser from the backbone app. eg: "
+echo "$TESTNAME"
 # echo '  //Send username to limit the requests so only valid users can get a user list'
 # echo '  dataToPost.username = this.get("userPrivate").get("username");'
 # echo '  dataToPost.couchConnection = window.app.get("corpus").get("couchConnection");'
@@ -800,7 +821,8 @@ echo "-------------------------------------------------------------"
 
 
 echo "-------------------------------------------------------------"
-# echo "It should refuse newcorpus if the title is not specified"
+TESTNAME="It should refuse newcorpus if the title is not specified"
+echo "$TESTNAME"
 # TESTCOUNT=$[TESTCOUNT + 1]
 # result="`curl -kX POST \
 # -H "Content-Type: application/json" \
@@ -818,7 +840,8 @@ echo "-------------------------------------------------------------"
 # fi 
 
 echo "-------------------------------------------------------------"
-# echo "It should not complain if users tries to recreate a newcorpus"
+TESTNAME="It should not complain if users tries to recreate a newcorpus"
+echo "$TESTNAME"
 # TESTCOUNT=$[TESTCOUNT + 1]
 # result="`curl -kX POST \
 # -H "Content-Type: application/json" \
@@ -843,7 +866,8 @@ echo "-------------------------------------------------------------"
 # fi 
 
 echo "-------------------------------------------------------------"
-# echo "It should accept deprecated updateroles and run addroletouser (from the spreadsheet app eg)"
+TESTNAME="It should accept deprecated updateroles and run addroletouser (from the spreadsheet app eg)"
+echo "$TESTNAME"
 # echo 'file://angular_client/modules/spreadsheet/app/scripts/controllers/SpreadsheetController.js '
 # echo '      dataToPost.userRoleInfo = {};'
 # echo '      dataToPost.userRoleInfo.usernameToModify = userid;'
@@ -925,7 +949,8 @@ echo "-------------------------------------------------------------"
 
 
 echo "-------------------------------------------------------------"
-# echo "It should accept new updateroles (from the spreadsheet app eg)"
+TESTNAME="It should accept new updateroles (from the spreadsheet app eg)"
+echo "$TESTNAME"
 # echo '    '
 # TESTCOUNT=$[TESTCOUNT + 1]
 # result="`curl -kX POST \

@@ -316,7 +316,7 @@ var addDeprecatedRoutes = function(app) {
         }
       }
       req.body.couchconnection = couchconnection;
-      console.log(req.body.couchconnection)
+      console.log(req.body.couchconnection);
       if (!req.body.couchconnection || !req.body.couchconnection.pouchname || req.body.couchconnection.pouchname === "default") {
         console.log("Client didnt define the corpus to modify.");
         res.status(412);
@@ -333,25 +333,55 @@ var addDeprecatedRoutes = function(app) {
         return;
       }
 
-      
+
       // Add a role to the user
       var currentlyProcessingUsername = req.body.users[0].username;
-      authenticationfunctions.addRoleToUser(req, function(err, userPermission, info) {
+      authenticationfunctions.addRoleToUser(req, function(err, userPermissionSet) {
+        console.log("Getting back the results of authenticationfunctions.addRoleToUser ");
+        console.log(err);
+        console.log(userPermissionSet);
+
+        if (!userPermissionSet) {
+          userPermissionSet = {
+            username: "error",
+            status: 500,
+            message: "There was a problem processing your request, Please report this 32134."
+          };
+        }
+
+        if (Object.prototype.toString.call(userPermissionSet) !== "[object Array]") {
+          userPermissionSet = [userPermissionSet];
+        }
+        console.log(userPermissionSet);
+
+        var info = userPermissionSet.map(function(userPermission) {
+          if (!userPermission) {
+            return "";
+          }
+          if (!userPermission.message) {
+            userPermission.message = "There was a problem processing this user permission, Please report this 32134.";
+            console.log(userPermission.message);
+            console.log(userPermission);
+          } else if (userPermission.message.indexOf("not found") > -1) {
+            userPermission.message = "You can't add " + userPermission.username + " to this corpus, their username was unrecognized. " + userPermission.message;
+          }
+          return userPermission.message;
+        });
+
+        console.log(info);
+
         if (err) {
           res.status(err.status || 500);
           returndata.status = err.status || 500;
           console.log(new Date() + " There was an error in the authenticationfunctions.addRoleToUser:\n" + util.inspect(err));
-          if (info.message.indexOf("not found") > -1) {
-            info.message = "You can't add " + currentlyProcessingUsername + " to this corpus, their username was unrecognized. " + info.message
-          }
-          returndata.userFriendlyErrors = [info.message];
+
+          returndata.userFriendlyErrors = info;
 
         } else {
-          returndata.roleadded = true;
-          returndata.userPermission = userPermission;
-          returndata.info = [info.message];
+          // returndata.roleadded = true;
+          returndata.users = userPermissionSet;
+          returndata.info = info;
           // returndata.userFriendlyErrors = ["Faking an error"];
-
           console.log(new Date() + " Returning role added okay:\n");
         }
         console.log(new Date() + " Returning response:\n" + util.inspect(returndata));
