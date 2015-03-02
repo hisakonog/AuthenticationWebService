@@ -868,83 +868,109 @@ fi
 echo "-------------------------------------------------------------"
 TESTNAME="It should accept addroletouser from the backbone app. eg: "
 echo "$TESTNAME"
-# echo '  //Send username to limit the requests so only valid users can get a user list'
-# echo '  dataToPost.username = this.get("userPrivate").get("username");'
-# echo '  dataToPost.couchConnection = window.app.get("corpus").get("couchConnection");'
-# echo ""
-# TESTCOUNT=$[TESTCOUNT + 1]
-# result="`curl -kX POST \
-# -H "Content-Type: application/json" \
-# -d '{"username": "jenkins", "password": "phoneme", "userToAddToRole": "testingprototype", "roles": ["reader","commenter"], "couchConnection": {"pouchname": "jenkins-firstcorpus"} }' \
-# $SERVER/addroletouser `"
-# echo ""
-# echo "Response: $result";
-# if [[ $result =~ userFriendlyErrors ]]
-#   then {
-#     TESTFAILED=$[TESTFAILED + 1]
-#     TESTSFAILEDSTRING="$TESTSFAILEDSTRING : $TESTNAME"
-#   } else {
-#     if [[ $result =~ "Added role(s) to user" ]]
-#       then {
-#         echo "Response: $result" | grep -C 4 readers;
-#         echo " server replied with addroletouser details to a prototype-like request."
-#       } else {
-#         TESTFAILED=$[TESTFAILED + 1]
-#         TESTSFAILEDSTRING="$TESTSFAILEDSTRING : $TESTNAME"
-#       }
-#     fi 
-#   }
-# fi 
-
+result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{"username": "jenkins", "password": "phoneme",
+"users": [{
+  "username": "testingprototype",
+  "remove": ["all"]
+}],
+"couchConnection": {"pouchname": "jenkins-firstcorpus"} }' \
+$SERVER/addroletouser `"
+echo '  //Send username to limit the requests so only valid users can get a user list'
+echo '  dataToPost.username = this.get("userPrivate").get("username");'
+echo '  dataToPost.couchConnection = window.app.get("corpus").get("couchConnection");'
+echo ""
+TESTCOUNT=$[TESTCOUNT + 1]
+result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{"username": "jenkins", 
+"password": "phoneme", 
+"userToAddToRole": "testingprototype", 
+"roles": ["reader","commenter"], 
+"couchConnection": {
+  "pouchname": "jenkins-firstcorpus"
+} }' \
+$SERVER/addroletouser `"
+echo ""
+echo "Response: $result";
+if [[ $result =~ userFriendlyErrors ]]
+  then {
+    TESTFAILED=$[TESTFAILED + 1]
+    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : $TESTNAME"
+  } else {
+    echo "   success"
+    if [[ $result =~ "testingprototype now has reader commenter access to jenkins-firstcorpus" ]]
+      then {
+        echo "Response: $result" | grep -C 4 readers;
+        echo "    server replied with informative info"
+      } else {
+        TESTFAILED=$[TESTFAILED + 1]
+        TESTSFAILEDSTRING="$TESTSFAILEDSTRING : $TESTNAME"
+      }
+    fi 
+  }
+fi 
 
 
 echo "-------------------------------------------------------------"
 TESTNAME="It should refuse newcorpus if the title is not specified"
 echo "$TESTNAME"
-# TESTCOUNT=$[TESTCOUNT + 1]
-# result="`curl -kX POST \
-# -H "Content-Type: application/json" \
-# -d '{"username": "jenkins", "password": "phoneme"}' \
-# $SERVER/newcorpus `"
-# echo ""
-# echo "Response: $result";
-# if [[ $result =~ userFriendlyErrors ]]
-#   then {
-#     echo "sever refused, this is good."
-#   } else {
-#     TESTFAILED=$[TESTFAILED + 1]
-#     TESTSFAILEDSTRING="$TESTSFAILEDSTRING : $TESTNAME"
-#   }
-# fi 
+TESTCOUNT=$[TESTCOUNT + 1]
+result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{"username": "jenkins", "password": "phoneme"}' \
+$SERVER/newcorpus `"
+echo ""
+echo "Response: $result";
+if [[ $result =~ userFriendlyErrors ]]
+  then {
+    echo "   success"
+    if [[ $result =~ "missing: newCorpusName" ]]
+      then {
+        echo "Response: $result" | grep -C 4 readers;
+        echo "    server replied with informative info"
+      } else {
+        TESTFAILED=$[TESTFAILED + 1]
+        TESTSFAILEDSTRING="$TESTSFAILEDSTRING : $TESTNAME"
+      }
+    fi 
+  } else {
+    TESTFAILED=$[TESTFAILED + 1]
+    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : $TESTNAME"
+  }
+fi 
 
 echo "-------------------------------------------------------------"
 TESTNAME="It should not complain if users tries to recreate a newcorpus"
 echo "$TESTNAME"
-# TESTCOUNT=$[TESTCOUNT + 1]
-# result="`curl -kX POST \
-# -H "Content-Type: application/json" \
-# -d '{"username": "jenkins", "password": "phoneme", "newCorpusName": "My new corpus title"}' \
-# $SERVER/newcorpus `"
-# echo ""
-# echo "Response: $result";
-# if [[ $result =~ userFriendlyErrors ]]
-#   then {
-#    echo "server replied with user friendly errors, which is okay"
-#    } else {
-#     if [[ $result =~ 302 ]]
-#       then {
-#         echo "Response: $result" | grep -C 2 my_new_corpus_title;
-#         echo " server replied with a 302 status saying it existed."
-#       } else {
-#         TESTFAILED=$[TESTFAILED + 1]
-#         TESTSFAILEDSTRING="$TESTSFAILEDSTRING : $TESTNAME"
-#       }
-#     fi 
-#   }
-# fi 
+TESTCOUNT=$[TESTCOUNT + 1]
+result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{"username": "jenkins", 
+"password": "phoneme", 
+"newCorpusName": "My new corpus title"}' \
+$SERVER/newcorpus `"
+echo ""
+echo "Response: $result";
+if [[ $result =~ userFriendlyErrors ]]
+  then {
+   echo "   success"
+ } else {
+  if [[ $result =~ "already exists, no need to create it" ]]
+    then {
+      echo "Response: $result" | grep -C 2 my_new_corpus_title;
+      echo "    server replied with a 302 status saying it existed."
+    } else {
+      TESTFAILED=$[TESTFAILED + 1]
+      TESTSFAILEDSTRING="$TESTSFAILEDSTRING : $TESTNAME"
+    }
+  fi 
+}
+fi 
 
 echo "-------------------------------------------------------------"
-TESTNAME="It should accept deprecated updateroles and run addroletouser (from the spreadsheet app eg)"
+TESTNAME="It should accept deprecated updateroles and run addroletouser (from the spreadsheet app)"
 echo "$TESTNAME"
 # echo 'file://angular_client/modules/spreadsheet/app/scripts/controllers/SpreadsheetController.js '
 # echo '      dataToPost.userRoleInfo = {};'
@@ -1011,38 +1037,87 @@ echo "$TESTNAME"
 # echo ''
 # echo '    dataToPost.userRoleInfo = newUserRoles;'
 # echo '    '
-# TESTCOUNT=$[TESTCOUNT + 1]
-# result="`curl -kX POST \
-# -H "Content-Type: application/json" \
-# -d '{"username": "jenkins", "password": "phoneme", "serverCode": "localhost", "userRoleInfo": {"usernameToModify": "testingprototype", "pouchname": "jenkins-firstcorpus", "admin": false, "writer": true, "reader": true, "commenter": true }}' \
-# $SERVER/updateroles `"
-# echo ""
-# echo "Response: $result";
-# if [[ $result =~ userFriendlyErrors ]]
-#   then {
-#     TESTFAILED=$[TESTFAILED + 1]
-#     TESTSFAILEDSTRING="$TESTSFAILEDSTRING : $TESTNAME"
-#   }
-# fi 
+TESTCOUNT=$[TESTCOUNT + 1]
+result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{"username": "jenkins", 
+"password": "phoneme", 
+"serverCode": "localhost", 
+"userRoleInfo": {
+  "usernameToModify": "testingprototype", 
+  "pouchname": "jenkins-firstcorpus", 
+  "admin": false, 
+  "writer": true, 
+  "reader": true, 
+  "commenter": true 
+}}' \
+$SERVER/updateroles `"
+echo ""
+echo "Response: $result";
+if [[ $result =~ userFriendlyErrors ]]
+  then {
+    TESTFAILED=$[TESTFAILED + 1]
+    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : $TESTNAME"
+  } else {
+    echo "   success"
+    if [[ $result =~ "has reader commenter writer access" ]]
+      then {
+        echo "Response: $result" | grep -C 3 after;
+        echo "    server replied with informative info"
+      } else {
+        TESTFAILED=$[TESTFAILED + 1]
+        TESTSFAILEDSTRING="$TESTSFAILEDSTRING : $TESTNAME"
+      }
+    fi 
+  }
+fi 
 
 
 echo "-------------------------------------------------------------"
 TESTNAME="It should accept new updateroles (from the spreadsheet app eg)"
 echo "$TESTNAME"
-# echo '    '
-# TESTCOUNT=$[TESTCOUNT + 1]
-# result="`curl -kX POST \
-# -H "Content-Type: application/json" \
-# -d '{"username": "jenkins", "password": "phoneme", "serverCode": "localhost", "pouchname": "jenkins-firstcorpus", "users": [{"username": "testingprototype", "add":["writer","commenter","reader"], "remove": ["admin"]} ] }' \
-# $SERVER/updateroles `"
-# echo ""
-# echo "Response: $result";
-# if [[ $result =~ userFriendlyErrors ]]
-#   then {
-#     TESTFAILED=$[TESTFAILED + 1]
-#     TESTSFAILEDSTRING="$TESTSFAILEDSTRING : $TESTNAME"
-#   }
-# fi 
+result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{"username": "jenkins", "password": "phoneme",
+"users": [{
+  "username": "testingspreadsheet",
+  "remove": ["all"]
+}],
+"couchConnection": {"pouchname": "jenkins-firstcorpus"} }' \
+$SERVER/addroletouser `"
+echo '    '
+TESTCOUNT=$[TESTCOUNT + 1]
+result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{"username": "jenkins", 
+"password": "phoneme", 
+"serverCode": "localhost", 
+"pouchname": "jenkins-firstcorpus", 
+"users": [{
+  "username": "testingspreadsheet", 
+  "add":["writer","commenter","reader"], 
+  "remove": ["admin"]
+} ] }' \
+$SERVER/updateroles `"
+echo ""
+echo "Response: $result";
+if [[ $result =~ userFriendlyErrors ]]
+  then {
+    TESTFAILED=$[TESTFAILED + 1]
+    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : $TESTNAME"
+  } else {
+    echo "   success"
+    if [[ $result =~ "testingspreadsheet now has writer commenter reader access" ]]
+      then {
+        echo "Response: $result" | grep -C 3 after;
+        echo "    server replied with informative info"
+      } else {
+        TESTFAILED=$[TESTFAILED + 1]
+        TESTSFAILEDSTRING="$TESTSFAILEDSTRING : $TESTNAME"
+      }
+    fi 
+  }
+fi 
 
 
 echo;

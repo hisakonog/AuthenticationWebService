@@ -315,9 +315,12 @@ var addDeprecatedRoutes = function(app) {
           couchconnection[attrib] = defaultConnection[attrib];
         }
       }
-      req.body.couchconnection = couchconnection;
-      console.log(req.body.couchconnection);
-      if (!req.body.couchconnection || !req.body.couchconnection.pouchname || req.body.couchconnection.pouchname === "default") {
+      if (req.body.pouchname && couchconnection.pouchname === "default") {
+        couchconnection.pouchname = req.body.pouchname;
+      }
+      req.body.couchConnection = couchconnection;
+      console.log(req.body.couchConnection);
+      if (!req.body.couchConnection || !req.body.couchConnection.pouchname || req.body.couchConnection.pouchname === "default") {
         console.log("Client didnt define the corpus to modify.");
         res.status(412);
         returndata.userFriendlyErrors = ["This app has made an invalid request. Please notify its developer. info: the corpus to be modified must be included in the request"];
@@ -336,7 +339,7 @@ var addDeprecatedRoutes = function(app) {
 
       // Add a role to the user
       var currentlyProcessingUsername = req.body.users[0].username;
-      authenticationfunctions.addRoleToUser(req, function(err, userPermissionSet) {
+      authenticationfunctions.addRoleToUser(req, function(err, userPermissionSet, optionalInfo) {
         console.log("Getting back the results of authenticationfunctions.addRoleToUser ");
         // console.log(err);
         // console.log(userPermissionSet);
@@ -347,6 +350,12 @@ var addDeprecatedRoutes = function(app) {
             status: 500,
             message: "There was a problem processing your request, Please report this 32134."
           };
+          if (optionalInfo && optionalInfo.message) {
+            userPermissionSet.message = optionalInfo.message;
+          }
+          if (err && err.status) {
+            userPermissionSet.status = err.status;
+          }
         }
 
         if (Object.prototype.toString.call(userPermissionSet) !== "[object Array]") {
@@ -359,7 +368,7 @@ var addDeprecatedRoutes = function(app) {
             return "";
           }
           if (!userPermission.message) {
-            userPermission.message = "There was a problem processing this user permission, Please report this 32134.";
+            userPermission.message = "There was a problem processing this user permission, Please report this 3134.";
             console.log(userPermission.message);
             console.log(userPermission);
           } else if (userPermission.message.indexOf("not found") > -1) {
@@ -461,13 +470,13 @@ var addDeprecatedRoutes = function(app) {
   app.post('/updateroles', function(req, res, next) {
 
     /* convert spreadhseet data into data which the addroletouser api can read */
-    var userRoleInfo = req.body.userRoleInfo || {};
+    req.body.userRoleInfo = req.body.userRoleInfo || {};
     var roles = [];
 
-    if (!req.body.roles && userRoleInfo) {
-      for (var role in userRoleInfo) {
-        if (userRoleInfo.hasOwnProperty(role)) {
-          if (role === "admin" || role === "writer" || role === "reader" || role === "commenter") {
+    if (!req.body.roles && req.body.userRoleInfo) {
+      for (var role in req.body.userRoleInfo) {
+        if (req.body.userRoleInfo.hasOwnProperty(role)) {
+          if (req.body.userRoleInfo[role] && (role === "admin" || role === "writer" || role === "reader" || role === "commenter")) {
             roles.push(role);
           }
         }
@@ -477,7 +486,9 @@ var addDeprecatedRoutes = function(app) {
     req.body.roles = req.body.roles || roles;
     console.log(new Date() + " updateroles is DEPRECATED, using the addroletouser route to process this request", roles);
     req.body.userToAddToRole = req.body.userToAddToRole || req.body.userRoleInfo.usernameToModify;
-    req.body.pouchname = userRoleInfo.pouchname;
+    if (req.body.userRoleInfo.pouchname) {
+      req.body.pouchname = req.body.userRoleInfo.pouchname;
+    }
     console.log(new Date() + " requester " + req.body.username + "  userToAddToRole " + req.body.userToAddToRole + " on " + req.body.pouchname);
 
     /* use the old api not the updateroles api */
