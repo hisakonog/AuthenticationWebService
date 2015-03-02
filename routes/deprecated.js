@@ -338,8 +338,8 @@ var addDeprecatedRoutes = function(app) {
       var currentlyProcessingUsername = req.body.users[0].username;
       authenticationfunctions.addRoleToUser(req, function(err, userPermissionSet) {
         console.log("Getting back the results of authenticationfunctions.addRoleToUser ");
-        console.log(err);
-        console.log(userPermissionSet);
+        // console.log(err);
+        // console.log(userPermissionSet);
 
         if (!userPermissionSet) {
           userPermissionSet = {
@@ -368,7 +368,7 @@ var addDeprecatedRoutes = function(app) {
           return userPermission.message;
         });
 
-        console.log(info);
+        // console.log(info);
 
         if (err) {
           res.status(err.status || 500);

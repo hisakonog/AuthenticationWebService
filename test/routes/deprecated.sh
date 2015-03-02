@@ -379,6 +379,16 @@ fi
 echo "-------------------------------------------------------------"
 TESTNAME="It should refuse to tell a corpusteam details if the username is a valid user but on that team. eg: "
 echo "$TESTNAME"
+echo " prep: remove user if currently on the team"
+result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{"username": "jenkins", "password": "phoneme",
+"users": [{
+  "username": "testingspreadsheet",
+  "remove": ["all"]
+}],
+"couchConnection": {"pouchname": "jenkins-firstcorpus"} }' \
+$SERVER/addroletouser `"
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
 -H "Content-Type: application/json" \
@@ -739,52 +749,120 @@ if [[ $result =~ userFriendlyErrors ]]
   }
 fi 
 
+sleep 1
 
 echo "-------------------------------------------------------------"
 TESTNAME="It should accept roles to add and remove from one or or more users "
+echo " prep: remove first user"
+result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{"username": "jenkins", "password": "phoneme",
+"users": [{
+  "username": "testingprototype",
+  "remove": ["all"]
+}],
+"couchConnection": {"pouchname": "jenkins-firstcorpus"} }' \
+$SERVER/addroletouser `"
+echo " prep: remove other user"
+result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{"username": "jenkins", "password": "phoneme",
+"users": [{
+  "username": "testingspreadsheet",
+  "remove": ["all"]
+}],
+"couchConnection": {"pouchname": "jenkins-firstcorpus"} }' \
+$SERVER/addroletouser `"
 echo "$TESTNAME"
-# echo '{' 
-# echo '  "username": "jenkins",' 
-# echo '  "password": "phoneme",' 
-# echo '  "couchConnection": {' 
-# echo '    "pouchname": "jenkins-firstcorpus"' 
-# echo '  },' 
-# echo '  "users": [{' 
-# echo '    "username": "testingprototype",' 
-# echo '    "add": [' 
-# echo '      "reader",' 
-# echo '      "commenter"' 
-# echo '    ]' 
-# echo '  }, {' 
-# echo '    "username": "testingspreadsheet",' 
-# echo '    "add": [' 
-# echo '      "reader"' 
-# echo '    ],' 
-# echo '    "remove": [' 
-# echo '      "admin",' 
-# echo '      "writer"' 
-# echo '    ]' 
-# echo '  }]' 
-# echo '}' 
-# echo ''
+echo '{' 
+echo '  "username": "jenkins",' 
+echo '  "password": "phoneme",' 
+echo '  "couchConnection": {' 
+echo '    "pouchname": "jenkins-firstcorpus"' 
+echo '  },' 
+echo '  "users": [{' 
+echo '    "username": "testingspreadsheet",' 
+echo '    "add": [' 
+echo '      "reader",' 
+echo '      "exporter"'
+echo '    ],' 
+echo '    "remove": [' 
+echo '      "admin",' 
+echo '      "writer"' 
+echo '    ]' 
+echo '  }, {' 
+echo '    "username": "testingprototype",' 
+echo '    "add": [' 
+echo '      "writer"'
+echo '    ]' 
+echo '  }]' 
+echo '}' 
+echo ''
+echo ""
+TESTCOUNT=$[TESTCOUNT + 1]
+result="`curl -kX POST \
+-H "Content-Type: application/json" \
+-d '{"username": "jenkins", "password": "phoneme",
+"users": [{
+  "username": "testingspreadsheet",
+  "add": ["reader", "exporter"],
+  "remove": ["admin", "writer"]
+},{
+  "username": "testingprototype",
+  "add": ["writer"]
+}],
+"couchConnection": {"pouchname": "jenkins-firstcorpus"} }' \
+$SERVER/addroletouser `"
+echo ""
+echo "Response: $result";
+if [[ $result =~ userFriendlyErrors ]]
+  then {
+    TESTFAILED=$[TESTFAILED + 1]
+    TESTSFAILEDSTRING="$TESTSFAILEDSTRING : $TESTNAME"
+  } else {
+    echo "   success"
+    if [[ $result =~ "has reader exporter access" ]]
+      then {
+        echo "   sever replied with updated role information"
 
-# -d '{"username": "jenkins", "password": "phoneme", "couchConnection": {"pouchname": "jenkins-firstcorpus", }, "users": [{"username": "testingprototype", "add": ["reader", "commenter"] }, {"username": "testingspreadsheet", "add": ["reader"], "remove": ["admin", "writer"] }] }' \
-# echo ""
-# TESTCOUNT=$[TESTCOUNT + 1]
-# result="`curl -kX POST \
-# -H "Content-Type: application/json" \
-# -d '{"username": "jenkins", "password": "phoneme"}' \
-# $SERVER/addroletouser `"
-# echo ""
-# echo "Response: $result";
-# if [[ $result =~ userFriendlyErrors ]]
-#   then {
-#     TESTFAILED=$[TESTFAILED + 1]
-#     TESTSFAILEDSTRING="$TESTSFAILEDSTRING : $TESTNAME"
-#   } else {
-#     echo " not failing yet"
-#   }
-# fi 
+        echo " Checking if corpus was added to the first user"
+        result="`curl -kX POST \
+        -H "Content-Type: application/json" \
+        -d '{"username": "testingspreadsheet", 
+        "password": "test"}' \
+        $SERVER/login `"
+        echo "Response: $result" | grep -C 2 "jenkins-firstcorpus";
+        if [[ $result =~ "\"pouchname\": \"jenkins-firstcorpus\"" ]]
+          then {
+            echo "    sever added corpus to the first user too"
+            echo " Checking if corpus was added to the second user"
+            result="`curl -kX POST \
+            -H "Content-Type: application/json" \
+            -d '{"username": "testingprototype", 
+            "password": "test"}' \
+            $SERVER/login `"
+            echo "Response: $result" | grep -C 2 "jenkins-firstcorpus";
+            if [[ $result =~ "\"pouchname\": \"jenkins-firstcorpus\"" ]]
+              then {
+                echo "    sever added corpus to the second user too"
+              } else {
+                TESTFAILED=$[TESTFAILED + 1]
+                TESTSFAILEDSTRING="$TESTSFAILEDSTRING : $TESTNAME"
+              }
+            fi 
+          } else {
+            TESTFAILED=$[TESTFAILED + 1]
+            TESTSFAILEDSTRING="$TESTSFAILEDSTRING : $TESTNAME"
+          }
+        fi 
+
+      } else {
+        TESTFAILED=$[TESTFAILED + 1]
+        TESTSFAILEDSTRING="$TESTSFAILEDSTRING : $TESTNAME"
+      }
+    fi 
+  }
+fi 
 
 
 echo "-------------------------------------------------------------"
