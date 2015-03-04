@@ -387,7 +387,7 @@ var addDeprecatedRoutes = function(app) {
           returndata.userFriendlyErrors = info;
 
         } else {
-          // returndata.roleadded = true;
+          returndata.roleadded = true;
           returndata.users = userPermissionSet;
           returndata.info = info;
           // returndata.userFriendlyErrors = ["Faking an error"];
