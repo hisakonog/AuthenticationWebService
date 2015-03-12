@@ -1,6 +1,6 @@
 {
   "name": "fielddb-auth",
-  "version": "2.44.22",
+  "version": "2.46.12",
   "description": "Authentication web services for FieldDB.",
   "homepage": "https://github.com/OpenSourceFieldlinguistics/FieldDB/issues/milestones?state=closed",
   "repository": {
