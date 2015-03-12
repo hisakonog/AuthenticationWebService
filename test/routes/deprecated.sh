@@ -128,7 +128,9 @@ echo "$TESTNAME"
 TESTCOUNT=$[TESTCOUNT + 1]
 result="`curl -kX POST \
 -H "Content-Type: application/json" \
--d '{"username": "jenkins", "password": "phoneme"}' \
+-d '{"username": "jenkins", 
+"password": "phoneme",
+"appbrand": "learnx"}' \
 $SERVER/register `"
 echo ""
 echo "Response: $result";
